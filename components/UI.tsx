@@ -1,6 +1,6 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Star, ShoppingCart, Heart, Eye } from "lucide-react";
+import { Star } from "lucide-react";
 import { Product } from "../types";
 
 export const Button = ({
@@ -87,17 +87,6 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
             </span>
           )}
         </div>
-
-        <Button
-          variant="outline"
-          className="w-full py-2 text-xs gap-2 group/btn"
-        >
-          <ShoppingCart
-            size={14}
-            className="group-hover/btn:text-emerald-600"
-          />{" "}
-          Add to Cart
-        </Button>
       </div>
     </div>
   );
