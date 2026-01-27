@@ -1,16 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useParams, Link } from "react-router-dom";
-import {
-  Star,
-  ShoppingCart,
-  Heart,
-  Share2,
-  ShieldCheck,
-  Truck,
-  Clock,
-  ChevronRight,
-  CheckCircle2,
-} from "lucide-react";
+import { ShieldCheck, Truck } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { Button, Breadcrumbs } from "../components/UI";
 import { dataService } from "../services/dataService";
@@ -113,32 +103,6 @@ export const ProductDetail = () => {
                     </span>
                   </div>
                 )}
-              </div>
-            </div>
-
-            <div className="space-y-6 mb-8">
-              <div className="flex items-center gap-6">
-                <div className="flex items-center border border-slate-200 rounded-lg overflow-hidden h-12">
-                  <button
-                    onClick={() => setQuantity((q) => Math.max(1, q - 1))}
-                    className="px-4 hover:bg-slate-50 transition-colors border-r"
-                  >
-                    -
-                  </button>
-                  <span className="w-12 text-center font-bold">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity((q) => q + 1)}
-                    className="px-4 hover:bg-slate-50 transition-colors border-l"
-                  >
-                    +
-                  </button>
-                </div>
-                <Button className="flex-1 h-12 gap-3">
-                  <ShoppingCart size={20} /> Add to Cart
-                </Button>
-                <button className="w-12 h-12 flex items-center justify-center border border-slate-200 rounded-lg text-slate-400 hover:bg-rose-50 hover:text-rose-600 hover:border-rose-200 transition-all">
-                  <Heart size={20} />
-                </button>
               </div>
             </div>
 
