@@ -146,14 +146,15 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         <div className="max-w-7xl mx-auto flex justify-between items-center">
           <div className="flex gap-6">
             <span className="flex items-center gap-1.5">
-              <Phone size={14} className="text-emerald-500" /> +880 1234 567890
+              <Phone size={14} className="text-emerald-500" />
+              +88 01714 169153
             </span>
             <span className="flex items-center gap-1.5">
-              <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–8PM
+              <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–7PM
             </span>
             <span className="flex items-center gap-1.5">
               <Mail size={14} className="text-emerald-500" />{" "}
-              support@electrobd.com
+              techsolutionsengineers@gmail.com
             </span>
           </div>
           <div className="flex gap-4">
@@ -307,8 +308,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               Electro<span className="text-emerald-500">BD</span>
             </Link>
             <p className="text-sm leading-relaxed text-slate-400">
-              ElectroBD is Bangladesh's premier destination for genuine
-              electronics, computer hardware, and gadgets since 2015. We
+              Techsolution & Engineers is considered to be masters in Automation
+              System Integration, design, development, installation, testing,
+              and commissioning for various industrial applications. We
               prioritize customer satisfaction above all.
             </p>
             <div className="flex gap-4">
@@ -407,16 +409,17 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <li className="flex items-start gap-3">
                 <MapPin size={20} className="text-emerald-500 shrink-0" />
                 <span>
-                  123 Tech Tower, Multiplan Center, Elephant Road, Dhaka-1205
+                  P# 293, Jamtola Mor, Shadhinota Sarani Road, North Badda,
+                  Dhaka-1212
                 </span>
               </li>
               <li className="flex items-center gap-3">
                 <Phone size={18} className="text-emerald-500 shrink-0" />
-                <span>+880 1234 567890</span>
+                <span>+88 01714 169153</span>
               </li>
               <li className="flex items-center gap-3">
                 <Mail size={18} className="text-emerald-500 shrink-0" />
-                <span>support@electrobd.com</span>
+                <span>techsolutionsengineers@gmail.com</span>
               </li>
             </ul>
           </div>
