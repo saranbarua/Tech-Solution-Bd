@@ -303,28 +303,46 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Offer Strip */}
+      {/* Custom Procurement Strip – BTech Style */}
       <section className="px-4 py-8">
-        <div className="max-w-7xl mx-auto bg-emerald-600 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full -translate-y-1/2 translate-x-1/2" />
-          <div className="relative z-10 text-center md:text-left">
-            <span className="inline-block bg-amber-400 text-slate-900 text-[10px] font-black uppercase px-3 py-1 rounded-full mb-4">
-              Limited Time Offer
+        <div className="max-w-7xl mx-auto bg-slate-900 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
+          {/* Decorative shape */}
+          <div className="absolute top-0 right-0 w-64 h-64 bg-emerald-500/10 rounded-full -translate-y-1/2 translate-x-1/2" />
+
+          <div className="relative z-10 text-center md:text-left max-w-2xl">
+            <span className="inline-block bg-emerald-500 text-white text-[10px] font-black uppercase px-3 py-1 rounded-full mb-4 tracking-widest">
+              Custom Procurement
             </span>
-            <h2 className="text-3xl md:text-4xl font-black text-white mb-4">
-              Flat 10% Cashback on EMI
+
+            <h2 className="text-3xl md:text-4xl font-black text-white mb-4 leading-tight">
+              Product Not in Stock?
+              <br />
+              We Can Arrange It for You.
             </h2>
-            <p className="text-emerald-50 max-w-md">
-              Enjoy easy monthly installments with major banks and get instant
-              cashback in your wallet.
+
+            <p className="text-slate-300 leading-relaxed">
+              Some industrial components may not be readily available in stock.
+              Upon confirmation, we source genuine products directly from our
+              partners and deliver within an estimated{" "}
+              <span className="font-bold text-emerald-400">
+                15 working days
+              </span>
+              .
             </p>
           </div>
-          <Button
-            variant="secondary"
-            className="rounded-full shadow-xl shadow-slate-900/10"
-          >
-            Learn More
-          </Button>
+
+          <div className="relative z-10 flex flex-col sm:flex-row gap-3">
+            <Button variant="secondary" className="rounded-full px-8">
+              Request a Product
+            </Button>
+
+            <Button
+              variant="outline"
+              className="rounded-full px-8 border-white/40 text-white hover:bg-white/10"
+            >
+              Talk to Sales
+            </Button>
+          </div>
         </div>
       </section>
 
