@@ -14,6 +14,9 @@ import {
   Wifi,
   Terminal,
   Tv,
+  Wrench,
+  Settings,
+  Clock,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -203,35 +206,45 @@ export const Home = () => {
       />
 
       <Hero />
-
-      {/* Trust Badges */}
+      {/* Trust Badges – Industrial / Engineering */}
       <div className="max-w-7xl mx-auto px-4 py-12">
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-8">
           {[
-            { icon: <Truck />, label: "Fast Delivery", sub: "24-48h in Dhaka" },
             {
               icon: <ShieldCheck />,
-              label: "Safe Shopping",
-              sub: "100% Genuine Products",
+              label: "Genuine Components",
+              sub: "Certified & authentic industrial parts",
             },
             {
-              icon: <Headphones />,
-              label: "24/7 Support",
-              sub: "Dedicated Assistance",
+              icon: <Wrench />,
+              label: "On-Site Support",
+              sub: "Troubleshooting & commissioning",
             },
             {
-              icon: <RotateCcw />,
-              label: "Easy Returns",
-              sub: "7 Days Return Policy",
+              icon: <Settings />,
+              label: "Engineering Expertise",
+              sub: "PLC, HMI, VFD & panel solutions",
+            },
+            {
+              icon: <Clock />,
+              label: "Fast Response Time",
+              sub: "24–48h service availability",
             },
           ].map((item, i) => (
-            <div key={i} className="flex items-center gap-4 group">
-              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all">
+            <div
+              key={i}
+              className="flex items-start gap-4 group p-4 rounded-2xl hover:bg-slate-50 transition-all"
+            >
+              <div className="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-700 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-all shrink-0">
                 {item.icon}
               </div>
               <div>
-                <h4 className="font-bold text-slate-900">{item.label}</h4>
-                <p className="text-xs text-slate-500">{item.sub}</p>
+                <h4 className="font-black text-slate-900 leading-snug">
+                  {item.label}
+                </h4>
+                <p className="text-xs text-slate-600 mt-1 leading-relaxed">
+                  {item.sub}
+                </p>
               </div>
             </div>
           ))}
