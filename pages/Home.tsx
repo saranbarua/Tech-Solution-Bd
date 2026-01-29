@@ -25,6 +25,12 @@ import {
   Building2,
   TrendingUp,
   ArrowUpRight,
+  Printer,
+  Building,
+  Package,
+  Zap,
+  Utensils,
+  Shirt,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -602,7 +608,6 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Featured Products */}
       {/* Featured Projects / Case Studies */}
       <section className="py-20 bg-slate-50 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
@@ -808,6 +813,85 @@ export const Home = () => {
                 </Button>
               </Link>
             </div>
+          </div>
+        </div>
+      </section>
+      {/* Industries We Serve */}
+      <section className="py-16 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Header */}
+          <div className="max-w-3xl mb-10">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+              Industries We Serve
+            </h2>
+            <p className="mt-4 text-slate-600 leading-relaxed">
+              Our automation and electrical solutions are trusted across
+              multiple industries where uptime, safety, and process reliability
+              matter.
+            </p>
+          </div>
+
+          {/* Chips */}
+          <div className="flex flex-wrap gap-4">
+            {[
+              {
+                icon: <Shirt className="text-emerald-700" />,
+                label: "Textile & Garments",
+              },
+              {
+                icon: <Factory className="text-indigo-700" />,
+                label: "Pharmaceutical",
+              },
+              {
+                icon: <Utensils className="text-amber-700" />,
+                label: "Food & Beverage",
+              },
+              {
+                icon: <Zap className="text-emerald-700" />,
+                label: "Power & Utilities",
+              },
+              {
+                icon: <Package className="text-indigo-700" />,
+                label: "Packaging & Printing",
+              },
+              {
+                icon: <Building className="text-amber-700" />,
+                label: "Steel & Metal",
+              },
+              {
+                icon: <Cpu className="text-slate-800" />,
+                label: "Electronics & Assembly",
+              },
+              {
+                icon: <Printer className="text-slate-700" />,
+                label: "Paper & Printing",
+              },
+            ].map((item, idx) => (
+              <div
+                key={idx}
+                className="group inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-50 border border-slate-200 hover:bg-white hover:shadow-md transition-all cursor-default"
+              >
+                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                  {item.icon}
+                </div>
+                <span className="text-sm font-black text-slate-800">
+                  {item.label}
+                </span>
+              </div>
+            ))}
+          </div>
+
+          {/* Bottom Note */}
+          <div className="mt-10 rounded-3xl bg-slate-50 border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <p className="text-sm text-slate-600 max-w-2xl">
+              Don’t see your industry listed? Our team adapts solutions based on
+              process requirements, control architecture, and operational goals.
+            </p>
+            <Link to="/contact">
+              <Button variant="outline" className="rounded-full px-6">
+                Discuss Your Industry
+              </Button>
+            </Link>
           </div>
         </div>
       </section>
