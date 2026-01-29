@@ -2,9 +2,10 @@ import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import {
   ShieldCheck,
-  Truck,
-  Headphones,
-  RotateCcw,
+  Factory,
+  Layers,
+  Activity,
+  FileCheck2,
   ArrowRight,
   Monitor,
   Laptop,
@@ -250,6 +251,132 @@ export const Home = () => {
           ))}
         </div>
       </div>
+      {/* Solutions / Services */}
+      <section className="py-16">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-10">
+            <div className="max-w-3xl">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                Solutions & Services
+              </h2>
+              <p className="mt-3 text-slate-600 leading-relaxed">
+                End-to-end industrial automation and electrical support—designed
+                for uptime, safety, and long-term reliability.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Link to="/contact">
+                <Button className="rounded-full px-6">
+                  Ask a Question <ArrowRight className="ml-2" size={18} />
+                </Button>
+              </Link>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {[
+              {
+                icon: <Settings className="text-emerald-700" />,
+                title: "PLC Programming & Commissioning",
+                desc: "Program, test, and commission PLC systems with clean logic, safety interlocks and documentation.",
+                points: [
+                  "Siemens / Mitsubishi / Delta",
+                  "On-site commissioning",
+                  "I/O testing & FAT",
+                ],
+                to: "/services/plc",
+              },
+              {
+                icon: <Layers className="text-indigo-700" />,
+                title: "HMI / SCADA Integration",
+                desc: "Operator-friendly screens, alarms, reporting and secure access for reliable plant monitoring.",
+                points: [
+                  "HMI design & mapping",
+                  "Alarm strategy",
+                  "Data logging & reports",
+                ],
+                to: "/services/hmi-scada",
+              },
+              {
+                icon: <Activity className="text-amber-700" />,
+                title: "VFD / Inverter Setup & Tuning",
+                desc: "Drive setup, parameter tuning, motor protection and performance optimization for stable operation.",
+                points: [
+                  "Parameter tuning",
+                  "Motor protection",
+                  "Energy optimization",
+                ],
+                to: "/services/vfd",
+              },
+              {
+                icon: <Cpu className="text-slate-800" />,
+                title: "Servo & Motion Control",
+                desc: "Servo selection, tuning and motion synchronization for precise speed, position, and repeatability.",
+                points: [
+                  "Servo sizing",
+                  "Tuning & calibration",
+                  "Motion sequence",
+                ],
+                to: "/services/servo",
+              },
+              {
+                icon: <Factory className="text-emerald-700" />,
+                title: "Control Panels / SDB / MCC",
+                desc: "Panel design, build, wiring standards, labeling and handover documentation—done professionally.",
+                points: [
+                  "Panel design & build",
+                  "Wiring standards",
+                  "BOQ & drawings",
+                ],
+                to: "/services/panels",
+              },
+              {
+                icon: <Wrench className="text-indigo-700" />,
+                title: "Maintenance, Repair & AMC",
+                desc: "Preventive maintenance, troubleshooting, and long-term service contracts to reduce downtime.",
+                points: [
+                  "Preventive maintenance",
+                  "Troubleshooting",
+                  "AMC support",
+                ],
+                to: "/services/amc",
+              },
+            ].map((s, idx) => (
+              <div
+                key={idx}
+                className="group bg-white border border-slate-200 rounded-3xl p-7 shadow-xl shadow-slate-200/40 hover:shadow-2xl hover:shadow-slate-200/60 transition-all"
+              >
+                <div className="flex items-start gap-4">
+                  <div className="w-12 h-12 rounded-2xl bg-slate-50 border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                    {s.icon}
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="text-lg font-black text-slate-900 leading-snug">
+                      {s.title}
+                    </h3>
+                    <p className="mt-2 text-sm text-slate-600 leading-relaxed">
+                      {s.desc}
+                    </p>
+                  </div>
+                </div>
+
+                <ul className="mt-5 space-y-2">
+                  {s.points.map((p) => (
+                    <li key={p} className="flex gap-2 text-sm text-slate-700">
+                      <FileCheck2
+                        className="mt-0.5 text-emerald-600"
+                        size={16}
+                      />
+                      <span>{p}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* Category Grid */}
       <section className="bg-slate-50 py-16">
