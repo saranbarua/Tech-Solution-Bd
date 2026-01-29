@@ -28,8 +28,8 @@ const Hero = () => {
       title: "Automation Solutions for Reliable Production",
       subtitle:
         "PLC, HMI, VFD, Servo and Control Panel integration with engineering-grade support.",
-      cta: "Explore Solutions",
-      link: "/services",
+      cta: "Explore Shop",
+      link: "/shop",
       bg: "bg-slate-900",
       img: "https://picsum.photos/seed/industrial/1400/700",
       text: "text-white",
