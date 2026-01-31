@@ -31,6 +31,10 @@ import {
   Zap,
   Utensils,
   Shirt,
+  Star,
+  ChevronLeft,
+  ChevronRight,
+  Quote,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -169,6 +173,227 @@ const Hero = () => {
         ))}
       </div>
     </section>
+  );
+};
+const TestimonialCarousel = ({
+  testimonials,
+}: {
+  testimonials: Testimonial[];
+}) => {
+  const list = testimonials?.length
+    ? testimonials?.map((t, i) => ({
+        ...t,
+        rating: t.rating ?? 5,
+        industry: t.industry ?? "Industrial",
+        id: t.id ?? `auto-${i}`,
+      }))
+    : [];
+
+  // If there are no testimonials, render a simple placeholder to avoid
+  // accessing properties on undefined and to prevent modulo-by-zero in timers.
+  if (!list.length) {
+    return (
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+        <div className="lg:col-span-12">
+          <div className="h-40 flex items-center justify-center bg-white border border-slate-200 rounded-3xl p-6">
+            <div className="text-slate-600">No testimonials available yet.</div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  const [active, setActive] = React.useState(0);
+
+  React.useEffect(() => {
+    if (list.length <= 1) return;
+    const timer = setInterval(() => {
+      setActive((a) => (a + 1) % list.length);
+    }, 6000);
+    return () => clearInterval(timer);
+  }, [list.length]);
+
+  const prev = () => setActive((a) => (a - 1 + list.length) % list.length);
+  const next = () => setActive((a) => (a + 1) % list.length);
+
+  return (
+    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+      {/* Left: Main card */}
+      <div className="lg:col-span-8">
+        <div className="relative h-full bg-slate-50 border border-slate-200 rounded-3xl p-8 md:p-10 shadow-xl shadow-slate-200/40 overflow-hidden">
+          <div className="absolute -top-8 -right-8 w-40 h-40 bg-emerald-500/10 rounded-full blur-2xl" />
+          <div className="absolute -bottom-12 -left-12 w-56 h-56 bg-indigo-500/10 rounded-full blur-2xl" />
+
+          <div className="relative z-10">
+            <div className="flex items-center justify-between gap-4 mb-6">
+              <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white border border-slate-200">
+                <Quote className="text-emerald-600" size={18} />
+                <span className="text-xs font-black uppercase tracking-widest text-slate-600">
+                  Verified Review
+                </span>
+              </div>
+
+              <div className="hidden md:flex items-center gap-2">
+                <button
+                  onClick={prev}
+                  className="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all"
+                  aria-label="Previous review"
+                >
+                  <ChevronLeft size={18} />
+                </button>
+                <button
+                  onClick={next}
+                  className="w-11 h-11 rounded-2xl bg-white border border-slate-200 flex items-center justify-center hover:bg-slate-900 hover:text-white transition-all"
+                  aria-label="Next review"
+                >
+                  <ChevronRight size={18} />
+                </button>
+              </div>
+            </div>
+
+            <p className="text-xl md:text-2xl text-slate-800 leading-relaxed font-medium">
+              “{list[active].content}”
+            </p>
+
+            <div className="mt-8 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <img
+                  src={list[active].avatar}
+                  alt={list[active].author}
+                  className="w-14 h-14 rounded-2xl border border-slate-200 object-cover"
+                />
+                <div>
+                  <div className="font-black text-slate-900">
+                    {list[active].author}
+                  </div>
+                  <div className="text-sm text-slate-600">
+                    {list[active].role}
+                  </div>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <span className="px-4 py-2 rounded-full bg-white border border-slate-200 text-xs font-black text-slate-700">
+                  {list[active].industry}
+                </span>
+                <div className="flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={16}
+                      className={
+                        i < (list[active].rating ?? 5)
+                          ? "text-amber-500"
+                          : "text-slate-300"
+                      }
+                      fill={
+                        i < (list[active].rating ?? 5) ? "currentColor" : "none"
+                      }
+                    />
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Dots */}
+            <div className="mt-10 flex justify-center gap-2">
+              {list.map((_, i) => (
+                <button
+                  key={i}
+                  onClick={() => setActive(i)}
+                  className={`h-2 rounded-full transition-all ${
+                    i === active ? "w-8 bg-emerald-500" : "w-2 bg-slate-300"
+                  }`}
+                  aria-label={`Go to review ${i + 1}`}
+                />
+              ))}
+            </div>
+
+            {/* Mobile controls */}
+            <div className="mt-6 flex md:hidden items-center justify-center gap-3">
+              <button
+                onClick={prev}
+                className="px-5 py-3 rounded-full bg-white border border-slate-200 font-black text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+              >
+                Prev
+              </button>
+              <button
+                onClick={next}
+                className="px-5 py-3 rounded-full bg-white border border-slate-200 font-black text-slate-900 hover:bg-slate-900 hover:text-white transition-all"
+              >
+                Next
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Right: Mini list (3 items preview) */}
+      <div className="lg:col-span-4">
+        <div className="h-full bg-white border border-slate-200 rounded-3xl p-6 shadow-xl shadow-slate-200/40">
+          <h3 className="text-sm font-black uppercase tracking-widest text-slate-500">
+            More Reviews
+          </h3>
+
+          <div className="mt-5 space-y-4">
+            {list.map((t, idx) => (
+              <button
+                key={t.id}
+                onClick={() => setActive(idx)}
+                className={`w-full text-left p-4 rounded-2xl border transition-all ${
+                  idx === active
+                    ? "border-emerald-300 bg-emerald-50"
+                    : "border-slate-200 hover:bg-slate-50"
+                }`}
+              >
+                <div className="flex items-center gap-3">
+                  <img
+                    src={t.avatar}
+                    alt={t.author}
+                    className="w-11 h-11 rounded-xl border border-slate-200 object-cover"
+                  />
+                  <div className="min-w-0">
+                    <div className="font-black text-slate-900 truncate">
+                      {t.author}
+                    </div>
+                    <div className="text-xs text-slate-600 truncate">
+                      {t.industry}
+                    </div>
+                  </div>
+                </div>
+
+                <p className="mt-3 text-sm text-slate-600 line-clamp-2">
+                  “{t.content}”
+                </p>
+
+                <div className="mt-3 flex items-center gap-1">
+                  {Array.from({ length: 5 }).map((_, i) => (
+                    <Star
+                      key={i}
+                      size={14}
+                      className={
+                        i < (t.rating ?? 5)
+                          ? "text-amber-500"
+                          : "text-slate-300"
+                      }
+                      fill={i < (t.rating ?? 5) ? "currentColor" : "none"}
+                    />
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <div className="mt-6">
+            <Link to="/contact">
+              <Button className="w-full rounded-full">
+                Get a Proposal <ArrowRight className="ml-2" size={18} />
+              </Button>
+            </Link>
+          </div>
+        </div>
+      </div>
+    </div>
   );
 };
 
@@ -564,8 +789,6 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Custom Procurement Strip – BTech Style */}
-
       <section className="px-4 py-8">
         <div className="max-w-7xl mx-auto bg-slate-900 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Decorative shape */}
@@ -608,7 +831,6 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Featured Projects / Case Studies */}
       <section className="py-20 bg-slate-50 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
@@ -915,35 +1137,28 @@ export const Home = () => {
         </div>
       </section>
 
-      {/* Testimonials */}
-      <section className="py-20">
-        <div className="max-w-3xl mx-auto px-4 text-center">
-          <h2 className="text-3xl font-black text-slate-900 mb-12">
-            What Our Customers Say
-          </h2>
-          <div className="relative">
-            <div className="text-slate-100 absolute -top-10 left-1/2 -translate-x-1/2 scale-[3]">
-              "
+      {/* Reviews / Testimonials – Industrial Style */}
+      <section className="py-20 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4">
+          <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
+            <div className="max-w-3xl">
+              <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+                Client Reviews
+              </h2>
+              <p className="mt-4 text-slate-600 leading-relaxed">
+                Feedback from plant teams who rely on automation stability,
+                clean commissioning, and responsive support.
+              </p>
             </div>
-            {testimonials.map((t, idx) => (
-              <div key={t.id} className={idx === 0 ? "block" : "hidden"}>
-                <p className="text-xl text-slate-600 italic leading-relaxed mb-8 relative z-10">
-                  {t.content}
-                </p>
-                <div className="flex flex-col items-center gap-3">
-                  <img
-                    src={t.avatar}
-                    alt={t.author}
-                    className="w-16 h-16 rounded-full border-4 border-emerald-100"
-                  />
-                  <div>
-                    <h4 className="font-bold text-slate-900">{t.author}</h4>
-                    <p className="text-xs text-slate-500">{t.role}</p>
-                  </div>
-                </div>
-              </div>
-            ))}
+
+            <Link to="/contact">
+              <Button variant="outline" className="rounded-full px-6">
+                Request a Quote
+              </Button>
+            </Link>
           </div>
+
+          <TestimonialCarousel testimonials={testimonials} />
         </div>
       </section>
     </Layout>

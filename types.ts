@@ -1,4 +1,3 @@
-
 export interface Product {
   id: string;
   name: string;
@@ -35,6 +34,8 @@ export interface Testimonial {
   role: string;
   content: string;
   avatar: string;
+  rating?: number;
+  industry?: string;
 }
 
 export interface CartItem extends Product {
@@ -45,6 +46,6 @@ export interface Order {
   id: string;
   date: string;
   total: number;
-  status: 'Pending' | 'Processing' | 'Shipped' | 'Delivered' | 'Cancelled';
+  status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   items: CartItem[];
 }
