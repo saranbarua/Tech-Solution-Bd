@@ -41,9 +41,13 @@ const CategoryTreeLinks = ({ nodes }: { nodes: CategoryNode[] }) => {
         <li key={node.id}>
           <Link
             to={`/shop?category=${encodeURIComponent(node.slug)}`}
-            className="text-sm text-slate-500 hover:text-emerald-600 hover:translate-x-1 transition-all block"
+            className="group/link flex items-center justify-between rounded-lg px-2 py-1.5 text-sm text-slate-600 hover:text-slate-900 hover:bg-slate-50 transition"
+            title={node.name}
           >
-            {node.name}
+            <span className="truncate">{node.name}</span>
+            <span className="text-[10px] font-semibold text-slate-400 group-hover/link:text-emerald-600">
+              →
+            </span>
           </Link>
 
           {node.children?.length ? (
@@ -151,12 +155,16 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [activeCat, setActiveCat] = useState<CategoryNode | null>(null);
+
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [loadingCategories, setLoadingCategories] = useState(true);
   const [categoryError, setCategoryError] = useState<string | null>(null);
-
+  useEffect(() => {
+    if (categories?.length) setActiveCat(categories[0]);
+  }, [categories]);
   useEffect(() => {
     const loadCategories = async () => {
       try {
@@ -235,26 +243,162 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 Categories <ChevronDown size={16} />
               </span>
               {/* Mega Menu */}
-              <div className="absolute top-full left-0 w-[600px] bg-white border border-slate-100 shadow-xl rounded-b-xl p-6 grid grid-cols-3 gap-8 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-y-2 group-hover:translate-y-0">
-                {loadingCategories ? (
-                  <div className="col-span-3 text-sm text-slate-400">
-                    Loading...
+              <div
+                className="absolute top-full left-0 mt-3 w-[860px] overflow-hidden
+  bg-white/90 backdrop-blur-xl border border-slate-200/70
+  shadow-[0_24px_80px_-28px_rgba(15,23,42,0.45)]
+  rounded-3xl
+  invisible group-hover:visible opacity-0 group-hover:opacity-100
+  transition-all duration-200 -translate-y-2 group-hover:translate-y-0"
+              >
+                {/* Top header strip */}
+                <div className="px-6 py-4 border-b border-slate-200/60 flex items-center justify-between">
+                  <div>
+                    <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 font-semibold">
+                      Browse Categories
+                    </p>
+                    <p className="text-sm text-slate-900 font-semibold tracking-tight">
+                      Choose your next upgrade
+                    </p>
                   </div>
-                ) : categoryError ? (
-                  <div className="col-span-3 text-sm text-red-500">
-                    {categoryError}
-                  </div>
-                ) : (
-                  categories.map((cat) => (
-                    <div key={cat.id}>
-                      <h4 className="font-bold text-slate-900 mb-3 border-b border-slate-50 pb-1">
-                        {cat.name}
-                      </h4>
 
-                      <CategoryTreeLinks nodes={cat.children || []} />
-                    </div>
-                  ))
-                )}
+                  <Link
+                    to="/shop"
+                    className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                  >
+                    View all →
+                  </Link>
+                </div>
+
+                {/* Body */}
+                <div className="grid grid-cols-[320px_1fr]">
+                  {/* LEFT: top-level categories list */}
+                  <div className="p-5 border-r border-slate-200/60 bg-white/60">
+                    {loadingCategories ? (
+                      <div className="text-sm text-slate-400">Loading...</div>
+                    ) : categoryError ? (
+                      <div className="text-sm text-red-500">
+                        {categoryError}
+                      </div>
+                    ) : (
+                      <div className="space-y-1">
+                        {categories.map((cat) => {
+                          const isActive = activeCat?.id === cat.id;
+                          return (
+                            <button
+                              key={cat.id}
+                              onMouseEnter={() => setActiveCat(cat)}
+                              className={`w-full text-left rounded-2xl px-3 py-2.5 transition
+                ${
+                  isActive
+                    ? "bg-slate-900 text-white shadow-sm"
+                    : "hover:bg-slate-100 text-slate-700"
+                }`}
+                            >
+                              <div className="flex items-center justify-between">
+                                <span className="font-semibold text-sm tracking-tight">
+                                  {cat.name}
+                                </span>
+                                <span
+                                  className={`text-[11px] font-semibold ${
+                                    isActive
+                                      ? "text-emerald-300"
+                                      : "text-slate-400"
+                                  }`}
+                                >
+                                  →
+                                </span>
+                              </div>
+                              <p
+                                className={`text-[11px] mt-0.5 ${
+                                  isActive ? "text-slate-200" : "text-slate-400"
+                                }`}
+                              >
+                                Explore sub-categories
+                              </p>
+                            </button>
+                          );
+                        })}
+                      </div>
+                    )}
+                  </div>
+
+                  {/* RIGHT: active category preview */}
+                  <div className="p-6 bg-white">
+                    {!activeCat ? (
+                      <div className="text-sm text-slate-400">
+                        Select a category…
+                      </div>
+                    ) : (
+                      <div className="h-full flex flex-col">
+                        <div className="flex items-start justify-between gap-3">
+                          <div>
+                            <h4 className="text-lg font-bold text-slate-900 tracking-tight">
+                              {activeCat.name}
+                            </h4>
+                            <p className="text-sm text-slate-500">
+                              Popular sub-categories inside {activeCat.name}
+                            </p>
+                          </div>
+
+                          <Link
+                            to={`/shop?category=${encodeURIComponent(activeCat.slug)}`}
+                            className="inline-flex items-center rounded-full px-4 py-2 text-xs font-semibold
+                bg-emerald-600 text-white hover:bg-emerald-700 transition"
+                          >
+                            Shop {activeCat.name}
+                          </Link>
+                        </div>
+
+                        <div className="mt-5 grid grid-cols-2 gap-3">
+                          {(activeCat.children || [])
+                            .slice(0, 10)
+                            .map((child) => (
+                              <Link
+                                key={child.id}
+                                to={`/shop?category=${encodeURIComponent(child.slug)}`}
+                                className="group rounded-2xl border border-slate-100 bg-slate-50/60 hover:bg-white
+                  hover:shadow-sm transition p-4"
+                              >
+                                <div className="flex items-center justify-between">
+                                  <p className="font-semibold text-sm text-slate-900 truncate">
+                                    {child.name}
+                                  </p>
+                                  <span className="text-[11px] font-semibold text-slate-400 group-hover:text-emerald-600">
+                                    →
+                                  </span>
+                                </div>
+
+                                <p className="text-[11px] text-slate-500 mt-1">
+                                  Browse items
+                                </p>
+                              </Link>
+                            ))}
+                        </div>
+
+                        {/* Bottom promo strip */}
+                        <div className="mt-auto pt-5">
+                          <div className="rounded-2xl border border-slate-100 bg-gradient-to-r from-slate-50 to-white p-4 flex items-center justify-between">
+                            <div>
+                              <p className="text-xs font-semibold text-slate-900">
+                                Need help choosing?
+                              </p>
+                              <p className="text-[11px] text-slate-500">
+                                Use Search to find exact model quickly.
+                              </p>
+                            </div>
+                            <button
+                              onClick={() => setIsSearchOpen(true)}
+                              className="text-xs font-semibold text-emerald-600 hover:text-emerald-700"
+                            >
+                              Open Search →
+                            </button>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                </div>
               </div>
             </div>
             <Link
