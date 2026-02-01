@@ -170,7 +170,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       try {
         setLoadingCategories(true);
         const data = await dataService.getCategories();
-        console.log(data);
+
         setCategories(data);
       } catch (err: any) {
         setCategoryError(err.message);
@@ -228,20 +228,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </button>
 
           <Link to="/" className="flex flex-col">
-            <span className="text-xl md:text-2xl font-bold tracking-tight text-slate-900">
+            <span className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900">
               Electro<span className="text-emerald-600">BD</span>
             </span>
-            <span className="text-[10px] hidden md:block text-slate-500 uppercase tracking-widest leading-none">
-              Your Ultimate Tech Destination
+
+            <span className="text-[10px] hidden md:block text-slate-500 uppercase tracking-[0.26em] leading-none mt-1">
+              Curated Tech • Trusted Delivery
             </span>
           </Link>
 
           {/* Desktop Nav */}
           <nav className="hidden lg:flex items-center gap-1">
             <div className="relative group px-4 py-2 cursor-pointer">
-              <span className="flex items-center gap-1 font-medium text-slate-700 group-hover:text-emerald-600 transition-colors">
+              <span className="flex items-center gap-2 font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
                 Categories <ChevronDown size={16} />
               </span>
+
               {/* Mega Menu */}
               <div
                 className="absolute top-full left-0 mt-3 w-[860px] overflow-hidden
