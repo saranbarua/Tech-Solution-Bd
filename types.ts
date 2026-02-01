@@ -49,3 +49,11 @@ export interface Order {
   status: "Pending" | "Processing" | "Shipped" | "Delivered" | "Cancelled";
   items: CartItem[];
 }
+
+export type CategoryNode = {
+  id: string;
+  name: string;
+  slug: string;
+  parentId: string | null;
+  children: CategoryNode[];
+};

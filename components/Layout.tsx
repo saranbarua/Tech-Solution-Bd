@@ -16,9 +16,8 @@ import {
   Youtube,
   Trash2,
 } from "lucide-react";
-import { CATEGORIES } from "../data/mockData";
 import { dataService } from "../services/dataService";
-import { Product } from "../types";
+import { CategoryNode, Product } from "../types";
 
 // SEO Helper
 export const SEO = ({
@@ -34,6 +33,28 @@ export const SEO = ({
     if (metaDesc) metaDesc.setAttribute("content", description);
   }, [title, description]);
   return null;
+};
+const CategoryTreeLinks = ({ nodes }: { nodes: CategoryNode[] }) => {
+  return (
+    <ul className="space-y-1.5">
+      {nodes.map((node) => (
+        <li key={node.id}>
+          <Link
+            to={`/shop?category=${encodeURIComponent(node.slug)}`}
+            className="text-sm text-slate-500 hover:text-emerald-600 hover:translate-x-1 transition-all block"
+          >
+            {node.name}
+          </Link>
+
+          {node.children?.length ? (
+            <div className="ml-3 mt-1 border-l border-slate-100 pl-3">
+              <CategoryTreeLinks nodes={node.children} />
+            </div>
+          ) : null}
+        </li>
+      ))}
+    </ul>
+  );
 };
 
 // Search Modal
@@ -132,6 +153,26 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
+  const [loadingCategories, setLoadingCategories] = useState(true);
+  const [categoryError, setCategoryError] = useState<string | null>(null);
+
+  useEffect(() => {
+    const loadCategories = async () => {
+      try {
+        setLoadingCategories(true);
+        const data = await dataService.getCategories();
+        console.log(data);
+        setCategories(data);
+      } catch (err: any) {
+        setCategoryError(err.message);
+      } finally {
+        setLoadingCategories(false);
+      }
+    };
+
+    loadCategories();
+  }, []);
 
   // Close menus on route change
   useEffect(() => {
@@ -195,25 +236,25 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               </span>
               {/* Mega Menu */}
               <div className="absolute top-full left-0 w-[600px] bg-white border border-slate-100 shadow-xl rounded-b-xl p-6 grid grid-cols-3 gap-8 invisible group-hover:visible opacity-0 group-hover:opacity-100 transition-all duration-200 -translate-y-2 group-hover:translate-y-0">
-                {CATEGORIES.map((cat) => (
-                  <div key={cat.id}>
-                    <h4 className="font-bold text-slate-900 mb-3 border-b border-slate-50 pb-1">
-                      {cat.name}
-                    </h4>
-                    <ul className="space-y-1.5">
-                      {cat.subcategories.map((sub) => (
-                        <li key={sub}>
-                          <Link
-                            to={`/shop?category=${cat.name}`}
-                            className="text-sm text-slate-500 hover:text-emerald-600 hover:translate-x-1 transition-all block"
-                          >
-                            {sub}
-                          </Link>
-                        </li>
-                      ))}
-                    </ul>
+                {loadingCategories ? (
+                  <div className="col-span-3 text-sm text-slate-400">
+                    Loading...
                   </div>
-                ))}
+                ) : categoryError ? (
+                  <div className="col-span-3 text-sm text-red-500">
+                    {categoryError}
+                  </div>
+                ) : (
+                  categories.map((cat) => (
+                    <div key={cat.id}>
+                      <h4 className="font-bold text-slate-900 mb-3 border-b border-slate-50 pb-1">
+                        {cat.name}
+                      </h4>
+
+                      <CategoryTreeLinks nodes={cat.children || []} />
+                    </div>
+                  ))
+                )}
               </div>
             </div>
             <Link
@@ -278,10 +319,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 Categories
               </h4>
               <div className="space-y-3">
-                {CATEGORIES.map((cat) => (
+                {categories.map((cat) => (
                   <Link
                     key={cat.id}
-                    to={`/shop?category=${cat.name}`}
+                    to={`/shop?category=${cat.slug}`} // ✅ slug
                     className="block text-slate-700 hover:text-emerald-600 transition-colors"
                   >
                     {cat.name}
@@ -344,10 +385,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           <div>
             <h4 className="text-white font-bold mb-6 text-lg">Categories</h4>
             <ul className="space-y-3 text-sm">
-              {CATEGORIES.slice(0, 5).map((cat) => (
+              {categories.slice(0, 5).map((cat) => (
                 <li key={cat.id}>
                   <Link
-                    to={`/shop?category=${cat.name}`}
+                    to={`/shop?category=${cat.slug}`} // ✅ slug
                     className="hover:text-emerald-500 transition-colors"
                   >
                     {cat.name}
