@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { User, Package, Heart, LogOut, Settings, Eye } from "lucide-react";
+import { Package, Heart, LogOut, Settings, Eye } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { Button } from "../components/UI";
 
