@@ -117,7 +117,9 @@ export const Shop = () => {
     (async () => {
       try {
         setLoading(true);
-        const p = await dataService.getProducts(); // all products
+        const p = await dataService.getProducts();
+        console.log(p);
+        // all products
         setProducts(p);
       } finally {
         setLoading(false);

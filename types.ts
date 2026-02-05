@@ -13,6 +13,8 @@ export interface Product {
   reviewsCount: number;
   isFeatured?: boolean;
   isDeal?: boolean;
+  slug: string;
+  images?: { url: string }[];
 }
 
 export interface Category {

@@ -2,6 +2,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Star } from "lucide-react";
 import { Product } from "../types";
+import apiurl from "@/src/apiUrl/apiUrl";
 
 export const Button = ({
   children,
@@ -35,14 +36,18 @@ export const Button = ({
 
 // Fix: Explicitly type as React.FC to allow 'key' and other standard React attributes in JSX
 export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
+  const imageUrl =
+    product.images?.length > 0
+      ? `${apiurl.imgUrl}${product.images[0].url}`
+      : "/placeholder.png";
   return (
     <div className="group relative bg-white border border-slate-200 rounded-xl overflow-hidden hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
       <Link
-        to={`/product/${product.id}`}
+        to={`/product/${product.slug}`}
         className="block relative aspect-square overflow-hidden bg-slate-50"
       >
         <img
-          src={product.image}
+          src={imageUrl}
           alt={product.name}
           className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
         />
@@ -71,7 +76,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
           </span>
         </div>
 
-        <Link to={`/product/${product.id}`} className="block mb-2">
+        <Link to={`/product/${product.slug}`} className="block mb-2">
           <h3 className="text-sm font-semibold text-slate-800 line-clamp-2 min-h-[2.5rem] group-hover:text-emerald-600 transition-colors">
             {product.name}
           </h3>

@@ -115,7 +115,7 @@ const SearchModal = ({
                 <button
                   key={product.id}
                   onClick={() => {
-                    navigate(`/product/${product.id}`);
+                    navigate(`/product/${product.slug}`);
                     onClose();
                   }}
                   className="flex items-center gap-4 p-2 hover:bg-slate-50 rounded-lg text-left w-full transition-colors"
