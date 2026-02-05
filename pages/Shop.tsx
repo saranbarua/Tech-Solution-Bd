@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Filter,
@@ -11,52 +11,149 @@ import {
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Breadcrumbs, Button } from "../components/UI";
 import { dataService } from "../services/dataService";
-import { Product, Category, Brand } from "../types";
+import { Product, Brand, CategoryNode } from "../types";
+
+const collectSlugs = (node: CategoryNode): string[] => {
+  const own = [node.slug];
+  const kids = (node.children || []).flatMap(collectSlugs);
+  return [...own, ...kids];
+};
+
+const findNodeBySlug = (
+  nodes: CategoryNode[],
+  slug: string,
+): CategoryNode | null => {
+  for (const n of nodes) {
+    if (n.slug === slug) return n;
+    const found = n.children?.length ? findNodeBySlug(n.children, slug) : null;
+    if (found) return found;
+  }
+  return null;
+};
+
+const CategoryTreeButtons = ({
+  nodes,
+  selectedSlug,
+  onSelect,
+  level = 0,
+}: {
+  nodes: CategoryNode[];
+  selectedSlug: string;
+  onSelect: (slug: string) => void;
+  level?: number;
+}) => {
+  return (
+    <div className="space-y-1">
+      {nodes.map((node) => {
+        const isActive = selectedSlug === node.slug;
+        return (
+          <div key={node.id}>
+            <button
+              onClick={() => onSelect(node.slug)}
+              className={`block w-full text-left text-sm py-1.5 transition-colors rounded-lg px-2
+                ${isActive ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
+              style={{ marginLeft: level * 10 }}
+              title={node.name}
+            >
+              {node.name}
+            </button>
+
+            {node.children?.length ? (
+              <div className="mt-1">
+                <CategoryTreeButtons
+                  nodes={node.children}
+                  selectedSlug={selectedSlug}
+                  onSelect={onSelect}
+                  level={level + 1}
+                />
+              </div>
+            ) : null}
+          </div>
+        );
+      })}
+    </div>
+  );
+};
 
 export const Shop = () => {
   const [searchParams] = useSearchParams();
+
   const [products, setProducts] = useState<Product[]>([]);
-  const [categories, setCategories] = useState<Category[]>([]);
+  const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // Filter states
   const [selectedCat, setSelectedCat] = useState(
     searchParams.get("category") || "All",
   );
   const [selectedBrand, setSelectedBrand] = useState("All");
-  const [priceRange, setPriceRange] = useState<[number, number]>([0, 250000]);
   const [sortBy, setSortBy] = useState("newest");
 
+  // ✅ sync with url category
   useEffect(() => {
-    setLoading(true);
-    Promise.all([
-      dataService.getProducts(),
-      dataService.getCategories(),
-      dataService.getBrands(),
-    ]).then(([p, c, b]) => {
-      setProducts(p);
-      setCategories(c);
-      setBrands(b);
-      setLoading(false);
-    });
+    const catFromUrl = searchParams.get("category") || "All";
+    setSelectedCat(catFromUrl);
+  }, [searchParams]);
+
+  // ✅ load categories + brands once
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const [c, b] = await Promise.all([
+          dataService.getCategories(),
+          dataService.getBrands(),
+        ]);
+        setCategories(c);
+        setBrands(b);
+      } finally {
+        setLoading(false);
+      }
+    })();
   }, []);
 
-  const filteredProducts = products
-    .filter((p) => {
-      const catMatch =
-        selectedCat === "All" || p.category?.slug === selectedCat;
+  // ✅ load products (fetch all once; then filter locally for parent/child support)
+  useEffect(() => {
+    (async () => {
+      try {
+        setLoading(true);
+        const p = await dataService.getProducts(); // all products
+        setProducts(p);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
 
-      const brandMatch = selectedBrand === "All" || p.brand === selectedBrand;
-      const priceMatch = p.price >= priceRange[0] && p.price <= priceRange[1];
-      return catMatch && brandMatch && priceMatch;
-    })
-    .sort((a, b) => {
-      if (sortBy === "price-low") return a.price - b.price;
-      if (sortBy === "price-high") return b.price - a.price;
-      if (sortBy === "popular") return b.rating - a.rating;
-      return 0; // newest/default
-    });
+  const allowedCategorySlugs = useMemo(() => {
+    if (selectedCat === "All") return null;
+    const node = findNodeBySlug(categories, selectedCat);
+    if (!node) return new Set([selectedCat]); // fallback
+    return new Set(collectSlugs(node)); // include children
+  }, [categories, selectedCat]);
+
+  const filteredProducts = useMemo(() => {
+    const list = products
+      .filter((p: any) => {
+        const catOk =
+          selectedCat === "All"
+            ? true
+            : allowedCategorySlugs
+              ? allowedCategorySlugs.has(p.category?.slug)
+              : p.category?.slug === selectedCat;
+
+        const brandOk = selectedBrand === "All" || p.brand === selectedBrand;
+        return catOk && brandOk;
+      })
+      .sort((a: any, b: any) => {
+        if (sortBy === "price-low") return a.price - b.price;
+        if (sortBy === "price-high") return b.price - a.price;
+        if (sortBy === "popular") return (b.rating || 0) - (a.rating || 0);
+        return 0;
+      });
+
+    return list;
+  }, [products, selectedCat, selectedBrand, sortBy, allowedCategorySlugs]);
 
   return (
     <Layout>
@@ -81,71 +178,26 @@ export const Shop = () => {
             </div>
 
             <div className="hidden lg:block space-y-8 sticky top-24">
-              {/* Category Filter */}
+              {/* Category Filter (Tree) */}
               <div>
                 <h4 className="font-bold text-slate-900 mb-4 pb-2 border-b">
                   Categories
                 </h4>
-                <div className="space-y-2">
-                  <button
-                    onClick={() => setSelectedCat("All")}
-                    className={`block w-full text-left text-sm py-1 transition-colors ${selectedCat === "All" ? "text-emerald-600 font-bold" : "text-slate-500 hover:text-emerald-600"}`}
-                  >
-                    All Categories
-                  </button>
-                  {categories.map((cat) => (
-                    <button
-                      key={cat.id}
-                      onClick={() => setSelectedCat(cat.slug)}
-                      className={`block w-full text-left text-sm py-1 transition-colors ${selectedCat === cat.slug ? "text-emerald-600 font-bold" : "text-slate-500 hover:text-emerald-600"}`}
-                    >
-                      {cat.name}
-                    </button>
-                  ))}
-                </div>
-              </div>
 
-              {/* Price Filter */}
-              <div>
-                <h4 className="font-bold text-slate-900 mb-4 pb-2 border-b">
-                  Price Range
-                </h4>
-                <input
-                  type="range"
-                  min="0"
-                  max="250000"
-                  step="5000"
-                  className="w-full h-1 bg-slate-200 rounded-lg appearance-none cursor-pointer accent-emerald-600 mb-2"
-                  value={priceRange[1]}
-                  onChange={(e) => setPriceRange([0, parseInt(e.target.value)])}
-                />
-                <div className="flex justify-between text-xs font-medium text-slate-500">
-                  <span>0 BDT</span>
-                  <span>{priceRange[1].toLocaleString()} BDT</span>
-                </div>
-              </div>
+                <button
+                  onClick={() => setSelectedCat("All")}
+                  className={`block w-full text-left text-sm py-1.5 rounded-lg px-2 transition-colors
+                    ${selectedCat === "All" ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
+                >
+                  All Categories
+                </button>
 
-              {/* Brand Filter */}
-              <div>
-                <h4 className="font-bold text-slate-900 mb-4 pb-2 border-b">
-                  Brands
-                </h4>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setSelectedBrand("All")}
-                    className={`text-xs px-2 py-1.5 rounded-md border transition-all ${selectedBrand === "All" ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300"}`}
-                  >
-                    All
-                  </button>
-                  {brands.map((brand) => (
-                    <button
-                      key={brand.id}
-                      onClick={() => setSelectedBrand(brand.name)}
-                      className={`text-xs px-2 py-1.5 rounded-md border transition-all ${selectedBrand === brand.name ? "bg-emerald-50 border-emerald-500 text-emerald-700" : "bg-white border-slate-200 text-slate-600 hover:border-emerald-300"}`}
-                    >
-                      {brand.name}
-                    </button>
-                  ))}
+                <div className="mt-2">
+                  <CategoryTreeButtons
+                    nodes={categories}
+                    selectedSlug={selectedCat}
+                    onSelect={(slug) => setSelectedCat(slug)}
+                  />
                 </div>
               </div>
             </div>
@@ -172,6 +224,7 @@ export const Shop = () => {
                     <List size={18} />
                   </button>
                 </div>
+
                 <select
                   className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-emerald-500"
                   value={sortBy}
@@ -210,7 +263,6 @@ export const Shop = () => {
                   onClick={() => {
                     setSelectedCat("All");
                     setSelectedBrand("All");
-                    setPriceRange([0, 250000]);
                   }}
                 >
                   Reset All Filters
@@ -218,7 +270,7 @@ export const Shop = () => {
               </div>
             )}
 
-            {/* Pagination */}
+            {/* Pagination (static for now) */}
             <div className="mt-12 flex items-center justify-center gap-2">
               <button
                 className="p-2 rounded-lg border border-slate-200 disabled:opacity-30"
