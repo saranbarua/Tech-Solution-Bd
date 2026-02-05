@@ -21,6 +21,9 @@ export const dataService = {
     await delay(200);
     return PRODUCTS.find((p) => p.id === id);
   },
+  getProductBySlug: async (slug: string): Promise<Product> => {
+    return fetchData(buildUrl(`customer-panel/products/${slug}`));
+  },
 
   getProducts: async (categorySlug?: string): Promise<Product[]> => {
     const url = new URL(buildUrl("customer-panel/products"));

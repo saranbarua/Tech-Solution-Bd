@@ -49,7 +49,7 @@ export const ProductCard: React.FC<{ product: Product }> = ({ product }) => {
         <img
           src={imageUrl}
           alt={product.name}
-          className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110"
+          className="w-full h-full object-contain transition-transform duration-500 group-hover:scale-110"
         />
         {product.oldPrice && (
           <span className="absolute top-2 left-2 bg-rose-500 text-white text-[10px] font-bold px-2 py-1 rounded">
