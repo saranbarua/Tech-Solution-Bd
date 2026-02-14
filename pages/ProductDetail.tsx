@@ -48,6 +48,19 @@ const ProductDetailsSkeleton = () => {
     </div>
   );
 };
+const SpecPill = ({ k, v }: { k: string; v: string }) => (
+  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+    <span className="text-[11px] font-semibold text-slate-500">{k}</span>
+    <span className="text-[11px] font-bold text-slate-900">{v}</span>
+  </div>
+);
+
+const Bullet = ({ text }: { text: string }) => (
+  <li className="flex gap-2.5">
+    <span className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-500" />
+    <span className="text-sm text-slate-700 leading-relaxed">{text}</span>
+  </li>
+);
 
 const ZoomModal = ({
   open,
@@ -380,12 +393,95 @@ export const ProductDetail = () => {
             </div>
 
             <div className="mt-6">
-              <h3 className="text-sm font-bold text-slate-900 mb-2">
-                About this product
-              </h3>
-              <p className="text-sm text-slate-600 leading-relaxed">
-                {(product as any).description || "No description provided yet."}
-              </p>
+              <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-[0_28px_90px_-60px_rgba(15,23,42,0.6)]">
+                {/* Header */}
+                <div className="px-5 py-4 border-b border-slate-200 bg-gradient-to-b from-white to-slate-50">
+                  <div className="flex items-start justify-between gap-4">
+                    <div>
+                      <h3 className="text-sm font-black text-slate-900 tracking-tight">
+                        About this product
+                      </h3>
+                      <p className="text-[12px] text-slate-500 mt-1">
+                        Technical specs, key features, and warranty in one
+                        place.
+                      </p>
+                    </div>
+
+                    <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-3 py-1.5">
+                      <span className="text-[11px] font-semibold tracking-wide">
+                        CV900N
+                      </span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Content */}
+                <div className="p-5">
+                  {/* ✅ Spec Pills */}
+                  <div className="flex flex-wrap gap-2.5">
+                    <SpecPill k="Input" v="1PH, 220V–260V AC (+10%)" />
+                    <SpecPill k="Output" v="1PH, 0–260V AC" />
+                    <SpecPill k="Capacity" v="0.75KW" />
+                    <SpecPill k="Frequency" v="0.2Hz – 500Hz" />
+                    <SpecPill k="Brand" v="Canroon" />
+                    <SpecPill k="Origin" v="Made in China" />
+                  </div>
+
+                  {/* Divider */}
+                  <div className="my-5 h-px w-full bg-slate-200" />
+
+                  {/* ✅ Feature Grid */}
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-xs font-bold text-slate-900">
+                        Control & Modes
+                      </p>
+                      <ul className="mt-3 space-y-2.5">
+                        <Bullet text="Sink/Source both mode available" />
+                        <Bullet text="PID control" />
+                        <Bullet text="RS485 communication" />
+                        <Bullet text="Removable display" />
+                      </ul>
+                    </div>
+
+                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
+                      <p className="text-xs font-bold text-slate-900">
+                        I/O & Relay
+                      </p>
+                      <ul className="mt-3 space-y-2.5">
+                        <Bullet text="6 Digital Input" />
+                        <Bullet text="2 Digital Output" />
+                        <Bullet text="2 Analog Input" />
+                        <Bullet text="2 Analog Output" />
+                        <Bullet text="Relay: 2 NO & 2 NC" />
+                      </ul>
+                    </div>
+                  </div>
+
+                  {/* ✅ Warranty Strip */}
+                  <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
+                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+                      <div>
+                        <p className="text-xs font-bold text-slate-900">
+                          Warranty
+                        </p>
+                        <p className="text-[12px] text-slate-500 mt-1">
+                          01 Year warranty coverage (terms & conditions apply).
+                        </p>
+                      </div>
+
+                      <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
+                        <span className="text-[11px] font-semibold text-slate-600">
+                          Suitable for
+                        </span>
+                        <span className="text-[11px] font-bold text-slate-900">
+                          Industrial VFD use
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
 
             <div className="mt-8 flex flex-col sm:flex-row gap-3">
