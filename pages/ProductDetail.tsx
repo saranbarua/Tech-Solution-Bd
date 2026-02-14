@@ -296,13 +296,6 @@ export const ProductDetail = () => {
                 onMouseLeave={() => setZooming(false)}
                 onClick={() => setZoomOpen(true)}
               >
-                {/* <img
-                  src={activeSrc}
-                  alt={product.name}
-                  className="w-full h-full object-contain"
-                  draggable={false}
-                /> */}
-
                 <AnimatePresence mode="wait">
                   <motion.img
                     key={activeSrc} // ✅ key changes = triggers animation
@@ -343,6 +336,16 @@ export const ProductDetail = () => {
                   onPick={(i) => setActiveIndex(i)}
                 />
               </div>
+            </div>
+            <div className="mt-8 flex flex-col sm:flex-row gap-3">
+              <Button className="rounded-xl">Add to Cart</Button>
+              <Link
+                to="/contact"
+                variant="outline"
+                className="rounded-xl inline-flex items-center justify-center px-6 py-2.5 rounded-lg font-semibold transition-all duration-200 border-2 border-slate-200 text-slate-700 hover:bg-slate-50 active:bg-slate-100"
+              >
+                Ask for Price
+              </Link>
             </div>
           </div>
 
@@ -482,13 +485,6 @@ export const ProductDetail = () => {
                   </div>
                 </div>
               </div>
-            </div>
-
-            <div className="mt-8 flex flex-col sm:flex-row gap-3">
-              <Button className="rounded-xl">Add to Cart</Button>
-              <Button variant="outline" className="rounded-xl">
-                Ask for Price
-              </Button>
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3">
