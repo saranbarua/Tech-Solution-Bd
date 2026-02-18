@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { dataService } from "../services/dataService";
 import { CategoryNode, Product } from "../types";
+import { images } from "@/public/image/Images";
 
 // SEO Helper
 export const SEO = ({
@@ -228,13 +229,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </button>
 
           <Link to="/" className="flex flex-col">
-            <span className="text-xl md:text-2xl font-extrabold tracking-tight text-slate-900">
-              Electro<span className="text-emerald-600">BD</span>
-            </span>
-
-            <span className="text-[10px] hidden md:block text-slate-500 uppercase tracking-[0.26em] leading-none mt-1">
-              Curated Tech • Trusted Delivery
-            </span>
+            <img src={images.logo} alt=" Logo" className="h-6 md:h-16" />
           </Link>
 
           {/* Desktop Nav */}
