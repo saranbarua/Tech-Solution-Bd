@@ -12,9 +12,7 @@ const App: React.FC = () => {
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />
-        {/* <Route path="/product/:id" element={<ProductDetail />} /> */}
         <Route path="/product/:slug" element={<ProductDetail />} />
-
         <Route path="/account" element={<Account />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
