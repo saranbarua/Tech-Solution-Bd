@@ -487,7 +487,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="space-y-6">
             <Link to="/" className="text-2xl font-bold text-white">
-              Electro<span className="text-emerald-500">BD</span>
+              TSE<span className="text-emerald-500"> Enginering</span>
             </Link>
             <p className="text-sm leading-relaxed text-slate-400">
               Techsolution & Engineers is considered to be masters in Automation
@@ -555,7 +555,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                   to="/about"
                   className="hover:text-emerald-500 transition-colors"
                 >
-                  About ElectroBD
+                  About Us
                 </Link>
               </li>
               <li>
@@ -608,7 +608,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         </div>
 
         <div className="max-w-7xl mx-auto px-4 pt-8 border-t border-slate-800 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-500">
-          <p>© 2024 ElectroBD. All rights reserved.</p>
+          <p>© 2026 TSE. All rights reserved.</p>
           <div className="flex gap-4">
             <span className="bg-slate-800 px-3 py-1 rounded">SSL Secure</span>
             <span className="bg-slate-800 px-3 py-1 rounded">
