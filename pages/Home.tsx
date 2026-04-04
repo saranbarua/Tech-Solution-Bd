@@ -35,6 +35,9 @@ import {
   ChevronLeft,
   ChevronRight,
   Quote,
+  Fuel,
+  Droplet,
+  Leaf,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -750,7 +753,7 @@ export const Home = () => {
               </p>
             </div>
           </div>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4  gap-4">
             {categories.map((cat) => (
               <Link
                 key={cat.id}
@@ -1087,6 +1090,18 @@ export const Home = () => {
               {
                 icon: <Printer className="text-slate-700" />,
                 label: "Paper & Printing",
+              },
+              {
+                icon: <Fuel className="text-red-600" />, // or Droplet if Fuel not available
+                label: "Oil & Gas",
+              },
+              {
+                icon: <Droplet className="text-blue-600" />,
+                label: "Water Treatment",
+              },
+              {
+                icon: <Leaf className="text-gray-700" />,
+                label: "Feed & Agriculture",
               },
             ].map((item, idx) => (
               <div
