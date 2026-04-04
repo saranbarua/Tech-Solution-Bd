@@ -11,8 +11,7 @@ import {
   X,
   ChevronDown,
   Facebook,
-  Twitter,
-  Instagram,
+  PhoneCall,
   Youtube,
   Trash2,
 } from "lucide-react";
@@ -487,7 +486,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
         <div className="max-w-7xl mx-auto px-4 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 mb-12">
           <div className="space-y-6">
             <Link to="/" className="text-2xl font-bold text-white">
-              TSE<span className="text-emerald-500"> Enginering</span>
+              <span className="text-emerald-500"> About TSE</span>
             </Link>
             <p className="text-sm leading-relaxed text-slate-400">
               Techsolution & Engineers is considered to be masters in Automation
@@ -502,17 +501,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               >
                 <Facebook size={18} />
               </a>
+
               <a
                 href="#"
                 className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all"
               >
-                <Twitter size={18} />
-              </a>
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all"
-              >
-                <Instagram size={18} />
+                <Phone size={18} />
               </a>
               <a
                 href="#"
