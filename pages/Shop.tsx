@@ -7,6 +7,7 @@ import {
   List,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Breadcrumbs, Button } from "../components/UI";
@@ -31,43 +32,131 @@ const findNodeBySlug = (
   return null;
 };
 
+// const CategoryTreeButtons = ({
+//   nodes,
+//   selectedSlug,
+//   onSelect,
+//   level = 0,
+// }: {
+//   nodes: CategoryNode[];
+//   selectedSlug: string;
+//   onSelect: (slug: string) => void;
+//   level?: number;
+// }) => {
+//   return (
+//     <div className="space-y-1">
+//       {nodes.map((node) => {
+//         const isActive = selectedSlug === node.slug;
+//         return (
+//           <div key={node.id}>
+//             <button
+//               onClick={() => onSelect(node.slug)}
+//               className={`block w-full text-left text-sm py-1.5 transition-colors rounded-lg px-2
+//                 ${isActive ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
+//               style={{ marginLeft: level * 10 }}
+//               title={node.name}
+//             >
+//               {node.name}
+//             </button>
+
+//             {node.children?.length ? (
+//               <div className="mt-1">
+//                 <CategoryTreeButtons
+//                   nodes={node.children}
+//                   selectedSlug={selectedSlug}
+//                   onSelect={onSelect}
+//                   level={level + 1}
+//                 />
+//               </div>
+//             ) : null}
+//           </div>
+//         );
+//       })}
+//     </div>
+//   );
+// };
+
 const CategoryTreeButtons = ({
   nodes,
   selectedSlug,
   onSelect,
+  openNodes,
+  setOpenNodes,
   level = 0,
 }: {
   nodes: CategoryNode[];
   selectedSlug: string;
   onSelect: (slug: string) => void;
+  openNodes: string[];
+  setOpenNodes: React.Dispatch<React.SetStateAction<string[]>>;
   level?: number;
 }) => {
+  const toggleNode = (slug: string) => {
+    setOpenNodes((prev) =>
+      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
+    );
+  };
+
   return (
     <div className="space-y-1">
       {nodes.map((node) => {
         const isActive = selectedSlug === node.slug;
+        const isOpen = openNodes.includes(node.slug);
+        const hasChildren = node.children?.length;
+
         return (
           <div key={node.id}>
-            <button
-              onClick={() => onSelect(node.slug)}
-              className={`block w-full text-left text-sm py-1.5 transition-colors rounded-lg px-2
-                ${isActive ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
-              style={{ marginLeft: level * 10 }}
-              title={node.name}
+            <div
+              className={`flex items-center justify-between text-sm py-2 rounded-lg px-2 cursor-pointer transition-all
+              ${
+                isActive
+                  ? "text-emerald-700 font-bold bg-emerald-50"
+                  : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"
+              }`}
+              style={{ paddingLeft: level * 14 + 8 }}
             >
-              {node.name}
-            </button>
+              {/* Left Side */}
+              <div
+                onClick={() => onSelect(node.slug)}
+                className="flex items-center gap-2 flex-1"
+              >
+                {hasChildren && (
+                  <span
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleNode(node.slug);
+                    }}
+                    className="flex items-center justify-center w-4 h-4"
+                  >
+                    {isOpen ? (
+                      <ChevronDown size={16} />
+                    ) : (
+                      <ChevronRight size={16} />
+                    )}
+                  </span>
+                )}
 
-            {node.children?.length ? (
-              <div className="mt-1">
+                <span>{node.name}</span>
+              </div>
+            </div>
+
+            {/* Animated Children */}
+            <div
+              className={`overflow-hidden transition-all duration-300 ${
+                isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
+              }`}
+            >
+              {hasChildren && (
                 <CategoryTreeButtons
                   nodes={node.children}
                   selectedSlug={selectedSlug}
                   onSelect={onSelect}
+                  openNodes={openNodes}
+                  setOpenNodes={setOpenNodes}
                   level={level + 1}
                 />
-              </div>
-            ) : null}
+              )}
+            </div>
           </div>
         );
       })}
@@ -77,7 +166,7 @@ const CategoryTreeButtons = ({
 
 export const Shop = () => {
   const [searchParams] = useSearchParams();
-
+  const [openNodes, setOpenNodes] = useState<string[]>([]);
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -118,7 +207,7 @@ export const Shop = () => {
       try {
         setLoading(true);
         const p = await dataService.getProducts();
-        console.log(p);
+        // console.log(p);
         // all products
         setProducts(p);
       } finally {
@@ -199,6 +288,8 @@ export const Shop = () => {
                     nodes={categories}
                     selectedSlug={selectedCat}
                     onSelect={(slug) => setSelectedCat(slug)}
+                    openNodes={openNodes}
+                    setOpenNodes={setOpenNodes}
                   />
                 </div>
               </div>
