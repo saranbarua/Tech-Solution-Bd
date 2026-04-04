@@ -444,7 +444,7 @@ export const Home = () => {
     <Layout>
       <SEO
         title="Home"
-        description="Welcome to ElectroBD - Bangladesh's best tech shop for components and laptops."
+        description="Welcome to tse - Bangladesh's best tech shop for components and laptops."
       />
 
       <Hero />

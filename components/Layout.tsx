@@ -28,7 +28,7 @@ export const SEO = ({
   description: string;
 }) => {
   useEffect(() => {
-    document.title = `${title} | ElectroBD`;
+    document.title = `${title} | tse`;
     const metaDesc = document.querySelector('meta[name="description"]');
     if (metaDesc) metaDesc.setAttribute("content", description);
   }, [title, description]);

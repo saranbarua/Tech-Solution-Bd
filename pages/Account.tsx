@@ -83,7 +83,7 @@ export const Account = () => {
             </form>
 
             <div className="mt-8 pt-8 border-t text-center">
-              <p className="text-sm text-slate-500 mb-4">New to ElectroBD?</p>
+              <p className="text-sm text-slate-500 mb-4">New to tse?</p>
               <button className="text-sm font-bold text-emerald-600 hover:underline">
                 Create an account
               </button>
