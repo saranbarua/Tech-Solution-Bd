@@ -87,68 +87,96 @@ const CategoryTreeButtons = ({
   nodes: CategoryNode[];
   selectedSlug: string;
   onSelect: (slug: string) => void;
-  openNodes: string[];
-  setOpenNodes: React.Dispatch<React.SetStateAction<string[]>>;
+  openNodes: Set<string>;
+  setOpenNodes: React.Dispatch<React.SetStateAction<Set<string>>>;
   level?: number;
 }) => {
-  const toggleNode = (slug: string) => {
-    setOpenNodes((prev) =>
-      prev.includes(slug) ? prev.filter((s) => s !== slug) : [...prev, slug],
-    );
+  const collectSlugs = (node: CategoryNode): string[] => [
+    node.slug,
+    ...(node.children || []).flatMap(collectSlugs),
+  ];
+
+  const isAncestorOfSelected = (node: CategoryNode) => {
+    if (!selectedSlug || selectedSlug === "All") return false;
+    const all = collectSlugs(node);
+    return all.includes(selectedSlug) && node.slug !== selectedSlug;
+  };
+
+  const toggle = (e: React.MouseEvent, slug: string) => {
+    e.stopPropagation();
+    setOpenNodes((prev) => {
+      const next = new Set(prev);
+      next.has(slug) ? next.delete(slug) : next.add(slug);
+      return next;
+    });
   };
 
   return (
-    <div className="space-y-1">
+    <div className="space-y-0.5">
       {nodes.map((node) => {
         const isActive = selectedSlug === node.slug;
-        const isOpen = openNodes.includes(node.slug);
-        const hasChildren = node.children?.length;
+        const isOpen = openNodes.has(node.slug);
+        const isAncestor = isAncestorOfSelected(node);
+        const hasChildren = !!node.children?.length;
 
         return (
           <div key={node.id}>
             <div
-              className={`flex items-center justify-between text-sm py-2 rounded-lg px-2 cursor-pointer transition-all
-              ${
-                isActive
-                  ? "text-emerald-700 font-bold bg-emerald-50"
-                  : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"
-              }`}
+              onClick={() => {
+                onSelect(node.slug);
+                if (hasChildren) {
+                  setOpenNodes((prev) => {
+                    const next = new Set(prev);
+                    next.add(node.slug); // auto-open when selected
+                    return next;
+                  });
+                }
+              }}
+              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-all
+                ${
+                  isActive
+                    ? "bg-emerald-50 text-emerald-800 font-medium"
+                    : isAncestor
+                      ? "text-emerald-700"
+                      : "text-slate-600 hover:bg-slate-50 hover:text-emerald-700"
+                }`}
               style={{ paddingLeft: level * 14 + 8 }}
             >
-              {/* Left Side */}
-              <div
-                onClick={() => onSelect(node.slug)}
-                className="flex items-center gap-2 flex-1"
-              >
-                {hasChildren && (
-                  <span
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleNode(node.slug);
+              {/* Toggle arrow */}
+              {hasChildren ? (
+                <span
+                  onClick={(e) => toggle(e, node.slug)}
+                  className="flex items-center justify-center w-5 h-5 rounded-md hover:bg-black/5 transition-colors flex-shrink-0"
+                >
+                  <ChevronRight
+                    size={13}
+                    className="transition-transform duration-200"
+                    style={{
+                      transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
                     }}
-                    className="flex items-center justify-center w-4 h-4"
-                  >
-                    {isOpen ? (
-                      <ChevronDown size={16} />
-                    ) : (
-                      <ChevronRight size={16} />
-                    )}
-                  </span>
-                )}
+                  />
+                </span>
+              ) : (
+                <span className="w-5 flex-shrink-0" />
+              )}
 
-                <span>{node.name}</span>
-              </div>
+              <span className="flex-1 leading-snug">{node.name}</span>
+
+              {/* Optional: count badge — wire up real counts from your data */}
+              {/* <span className="text-xs bg-slate-100 text-slate-400 rounded-full px-2 py-0.5">{node.count}</span> */}
             </div>
 
-            {/* Animated Children */}
+            {/* Children with CSS transition */}
             <div
-              className={`overflow-hidden transition-all duration-300 ${
-                isOpen ? "max-h-96 opacity-100" : "max-h-0 opacity-0"
-              }`}
+              className="overflow-hidden transition-all duration-250 ease-in-out"
+              style={{
+                maxHeight: isOpen ? "600px" : "0px",
+                opacity: isOpen ? 1 : 0,
+              }}
             >
               {hasChildren && (
                 <CategoryTreeButtons
-                  nodes={node.children}
+                  nodes={node.children!}
                   selectedSlug={selectedSlug}
                   onSelect={onSelect}
                   openNodes={openNodes}
@@ -163,10 +191,9 @@ const CategoryTreeButtons = ({
     </div>
   );
 };
-
 export const Shop = () => {
   const [searchParams] = useSearchParams();
-  const [openNodes, setOpenNodes] = useState<string[]>([]);
+  const [openNodes, setOpenNodes] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
@@ -178,11 +205,32 @@ export const Shop = () => {
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
 
-  // ✅ sync with url category
+  const autoOpenAncestors = (
+    nodes: CategoryNode[],
+    targetSlug: string,
+    open: Set<string>,
+  ) => {
+    for (const n of nodes) {
+      const slugs = collectSlugs(n);
+      if (slugs.includes(targetSlug) && n.slug !== targetSlug) {
+        open.add(n.slug);
+        if (n.children) autoOpenAncestors(n.children, targetSlug, open);
+      }
+    }
+  };
+
+  // Call inside your URL sync useEffect:
   useEffect(() => {
     const catFromUrl = searchParams.get("category") || "All";
     setSelectedCat(catFromUrl);
-  }, [searchParams]);
+    if (catFromUrl !== "All") {
+      setOpenNodes((prev) => {
+        const next = new Set(prev);
+        autoOpenAncestors(categories, catFromUrl, next);
+        return next;
+      });
+    }
+  }, [searchParams, categories]);
 
   // ✅ load categories + brands once
   useEffect(() => {
