@@ -439,7 +439,7 @@ export const Home = () => {
         return <Cpu />;
     }
   };
-
+  const slugify = (s: string) => s.toLowerCase().replace(/\s+/g, "-");
   return (
     <Layout>
       <SEO
@@ -757,7 +757,8 @@ export const Home = () => {
             {categories.map((cat) => (
               <Link
                 key={cat.id}
-                to={`/shop?category=${cat.name}`}
+                // to={`/shop?category=${cat.name}`}
+                to={`/shop?category=${slugify(cat.slug || cat.name)}`}
                 className="bg-white p-6 rounded-xl border border-slate-200 text-center hover:shadow-lg hover:border-emerald-300 transition-all group"
               >
                 <div className="inline-flex items-center justify-center w-12 h-12 mb-4 text-slate-400 group-hover:text-emerald-600 group-hover:scale-110 transition-all">
