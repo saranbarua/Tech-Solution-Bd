@@ -219,7 +219,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
 
       {/* Main Header */}
       <header className="sticky top-0 z-50 bg-white border-b border-slate-200 shadow-sm">
-        <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center justify-between gap-4">
+        <div className="max-w-7xl mx-auto px-4 h-16 md:h-20 flex items-center  gap-4">
           <button
             className="md:hidden p-2 -ml-2 text-slate-600"
             onClick={() => setIsMobileMenuOpen(true)}
@@ -232,7 +232,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
           </Link>
 
           {/* Desktop Nav */}
-          <nav className="hidden lg:flex items-center gap-1">
+          <nav className="hidden  lg:flex items-center gap-1">
             <div className="relative group px-4 py-2 cursor-pointer">
               <span className="flex items-center gap-2 font-semibold text-slate-800 group-hover:text-emerald-600 transition-colors">
                 Categories <ChevronDown size={16} />
@@ -410,30 +410,6 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               Brands
             </Link>
           </nav>
-
-          <div className="flex items-center gap-1.5 md:gap-4 flex-1 justify-end">
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="flex-1 max-w-xs hidden md:flex items-center gap-2 px-4 py-2 bg-slate-100 rounded-full text-slate-500 hover:bg-slate-200 transition-colors group"
-            >
-              <Search size={18} className="group-hover:text-emerald-600" />
-              <span className="text-sm">Search Tech...</span>
-            </button>
-
-            <button
-              onClick={() => setIsSearchOpen(true)}
-              className="md:hidden p-2 text-slate-600"
-            >
-              <Search size={22} />
-            </button>
-
-            {/* <Link
-              to="/account"
-              className="p-2 text-slate-600 hover:text-emerald-600 transition-colors"
-            >
-              <User size={22} />
-            </Link> */}
-          </div>
         </div>
       </header>
 
