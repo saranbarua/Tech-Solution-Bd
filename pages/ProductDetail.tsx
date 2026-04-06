@@ -48,10 +48,42 @@ const ProductDetailsSkeleton = () => {
     </div>
   );
 };
-const SpecPill = ({ k, v }: { k: string; v: string }) => (
-  <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
-    <span className="text-[11px] font-semibold text-slate-500">{k}</span>
-    <span className="text-[11px] font-bold text-slate-900">{v}</span>
+// const SpecPill = ({ k, v }: { k: string; v: string }) => (
+//   <div className="inline-flex items-center gap-2 rounded-full border border-slate-200 bg-white px-3 py-1.5 shadow-sm">
+//     <span className="text-[11px] font-semibold text-slate-500">{k}</span>
+//     <span className="text-[11px] font-bold text-slate-900">{v}</span>
+//   </div>
+// );
+const SpecPill = ({
+  label,
+  value,
+  accent = false,
+}: {
+  label: string;
+  value: string;
+  accent?: boolean;
+}) => (
+  <div
+    className={`rounded-xl p-3 border transition-colors ${
+      accent
+        ? "bg-emerald-50 border-emerald-200"
+        : "bg-slate-50 border-slate-200 hover:border-slate-300"
+    }`}
+  >
+    <p
+      className={`text-[10px] font-semibold uppercase tracking-wide mb-1 ${
+        accent ? "text-emerald-700" : "text-slate-400"
+      }`}
+    >
+      {label}
+    </p>
+    <p
+      className={`text-[13px] font-semibold leading-snug ${
+        accent ? "text-emerald-900" : "text-slate-800"
+      }`}
+    >
+      {value}
+    </p>
   </div>
 );
 
@@ -244,6 +276,7 @@ export const ProductDetail = () => {
       </Layout>
     );
   }
+  // console.log(product);
 
   if (!product) {
     return (
@@ -420,14 +453,17 @@ export const ProductDetail = () => {
 
                 {/* Content */}
                 <div className="p-5">
-                  {/* ✅ Spec Pills */}
-                  <div className="flex flex-wrap gap-2.5">
-                    <SpecPill k="Input" v="1PH, 220V–260V AC (+10%)" />
-                    <SpecPill k="Output" v="1PH, 0–260V AC" />
-                    <SpecPill k="Capacity" v="0.75KW" />
-                    <SpecPill k="Frequency" v="0.2Hz – 500Hz" />
-                    <SpecPill k="Brand" v="Canroon" />
-                    <SpecPill k="Origin" v="Made in China" />
+                  {/* Spec grid */}
+                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-3">
+                    Electrical specifications
+                  </p>
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <SpecPill label="Input" value="1PH, 220–260V AC" accent />
+                    <SpecPill label="Output" value="1PH, 0–260V AC" accent />
+                    <SpecPill label="Capacity" value="0.75 KW" accent />
+                    <SpecPill label="Frequency" value="0.2 – 500 Hz" />
+                    <SpecPill label="Brand" value="Canroon" />
+                    <SpecPill label="Origin" value="Made in China" />
                   </div>
 
                   {/* Divider */}
@@ -484,25 +520,6 @@ export const ProductDetail = () => {
                     </div>
                   </div>
                 </div>
-              </div>
-            </div>
-
-            <div className="mt-8 grid grid-cols-2 gap-3">
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold text-slate-900">
-                  Official Warranty
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Genuine products, verified sourcing
-                </p>
-              </div>
-              <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                <p className="text-xs font-semibold text-slate-900">
-                  Secure Delivery
-                </p>
-                <p className="text-[11px] text-slate-500 mt-1">
-                  Careful packaging, reliable dispatch
-                </p>
               </div>
             </div>
           </div>
