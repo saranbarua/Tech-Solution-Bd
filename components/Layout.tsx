@@ -427,12 +427,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               <Search size={22} />
             </button>
 
-            <Link
+            {/* <Link
               to="/account"
               className="p-2 text-slate-600 hover:text-emerald-600 transition-colors"
             >
               <User size={22} />
-            </Link>
+            </Link> */}
           </div>
         </div>
       </header>

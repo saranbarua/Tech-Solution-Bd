@@ -65,7 +65,7 @@ const Hero = () => {
       subtitle:
         "On-site support, preventive maintenance, repair and replacement for plant stability.",
       cta: "Request Service",
-      link: "/contact",
+      link: "/shop",
       bg: "bg-emerald-50",
       img: "https://picsum.photos/seed/service/1400/700",
       text: "text-slate-900",
@@ -825,12 +825,12 @@ export const Home = () => {
               Request a Product
             </Button>
 
-            <Button
+            {/* <Button
               variant="outline"
               className="rounded-full px-8 border-white/40 text-white hover:bg-white/10"
             >
               Talk to Sales
-            </Button>
+            </Button> */}
           </div>
         </div>
       </section>
