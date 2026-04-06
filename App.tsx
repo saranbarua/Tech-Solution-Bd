@@ -5,6 +5,7 @@ import { Shop } from "./pages/Shop";
 import { ProductDetail } from "./pages/ProductDetail";
 import { Account } from "./pages/Account";
 import { About, Contact } from "./pages/AboutContact";
+import Clients from "./pages/Clients";
 
 const App: React.FC = () => {
   return (
@@ -16,6 +17,7 @@ const App: React.FC = () => {
         <Route path="/account" element={<Account />} />
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
+        <Route path="/clients" element={<Clients />} />
       </Routes>
     </Router>
   );

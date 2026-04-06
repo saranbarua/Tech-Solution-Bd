@@ -32,50 +32,6 @@ const findNodeBySlug = (
   return null;
 };
 
-// const CategoryTreeButtons = ({
-//   nodes,
-//   selectedSlug,
-//   onSelect,
-//   level = 0,
-// }: {
-//   nodes: CategoryNode[];
-//   selectedSlug: string;
-//   onSelect: (slug: string) => void;
-//   level?: number;
-// }) => {
-//   return (
-//     <div className="space-y-1">
-//       {nodes.map((node) => {
-//         const isActive = selectedSlug === node.slug;
-//         return (
-//           <div key={node.id}>
-//             <button
-//               onClick={() => onSelect(node.slug)}
-//               className={`block w-full text-left text-sm py-1.5 transition-colors rounded-lg px-2
-//                 ${isActive ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
-//               style={{ marginLeft: level * 10 }}
-//               title={node.name}
-//             >
-//               {node.name}
-//             </button>
-
-//             {node.children?.length ? (
-//               <div className="mt-1">
-//                 <CategoryTreeButtons
-//                   nodes={node.children}
-//                   selectedSlug={selectedSlug}
-//                   onSelect={onSelect}
-//                   level={level + 1}
-//                 />
-//               </div>
-//             ) : null}
-//           </div>
-//         );
-//       })}
-//     </div>
-//   );
-// };
-
 const CategoryTreeButtons = ({
   nodes,
   selectedSlug,

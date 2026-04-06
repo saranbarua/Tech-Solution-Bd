@@ -404,10 +404,10 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               All Products
             </Link>
             <Link
-              to="/shop"
+              to="/clients"
               className="px-4 py-2 font-medium text-slate-700 hover:text-emerald-600 transition-colors"
             >
-              Brands
+              Clients
             </Link>
           </nav>
         </div>
