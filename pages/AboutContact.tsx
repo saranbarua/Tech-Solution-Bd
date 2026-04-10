@@ -360,6 +360,43 @@ export const Contact = () => {
   };
   const [submitted, setSubmitted] = useState(false);
 
+  // const handleSubmit = async (e: React.FormEvent) => {
+  //   e.preventDefault();
+
+  //   try {
+  //     const res = await fetch(
+  //       "https://formsubmit.co/ajax/techsolutionsengineers@gmail.com",
+  //       {
+  //         method: "POST",
+  //         headers: {
+  //           "Content-Type": "application/json",
+  //           Accept: "application/json",
+  //         },
+  //         body: JSON.stringify({
+  //           name: formData.name,
+  //           email: formData.email,
+  //           phone: formData.phone,
+  //           service: formData.service,
+  //           subject: formData.subject,
+  //           message: formData.message,
+  //           _subject: `New Contact: ${formData.subject}`,
+  //           _captcha: "false",
+  //         }),
+  //       },
+  //     );
+
+  //     const data = await res.json();
+
+  //     if (data.success === "true" || data.success === true) {
+  //       toast.success("Message sent successfully ✅");
+  //       setSubmitted(true);
+  //     } else {
+  //       toast.error("Failed to send message ❌");
+  //     }
+  //   } catch (err) {
+  //     alert("Something went wrong");
+  //   }
+  // };
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
@@ -385,16 +422,14 @@ export const Contact = () => {
         },
       );
 
-      const data = await res.json();
-
-      if (data.success === "true" || data.success === true) {
+      if (res.ok) {
         toast.success("Message sent successfully ✅");
         setSubmitted(true);
       } else {
         toast.error("Failed to send message ❌");
       }
     } catch (err) {
-      alert("Something went wrong");
+      toast.error("Something went wrong ⚠️");
     }
   };
 
