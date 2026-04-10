@@ -193,8 +193,8 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Bar */}
-      <div className="bg-slate-900 text-slate-300  py-2 px-4 hidden md:block">
-        <div className="max-w-7xl mx-auto  flex justify-between items-center">
+      <div className="bg-slate-900 text-slate-300  py-2 hidden md:block">
+        <div className="max-w-7xl  px-4  mx-auto  flex justify-between items-center">
           <div className="flex gap-6">
             <span className="flex items-center text-lg gap-1.5">
               <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–7PM
