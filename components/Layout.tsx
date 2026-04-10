@@ -191,14 +191,14 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Bar */}
-      <div className="bg-slate-900 text-slate-300 text-xs py-4 px-4 hidden md:block">
+      <div className="bg-slate-900 text-slate-300 text-xs py-2 px-4 hidden md:block">
         <div className="max-w-7xl mx-auto  flex justify-between items-center">
           <div className="flex gap-6">
             <span className="flex items-center text-lg gap-1.5 ">
               <Phone size={18} className="text-emerald-500" />
               +88 01714 169153
             </span>
-            <span className="flex items-center gap-1.5">
+            <span className="flex items-center text-lg gap-1.5">
               <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–7PM
             </span>
             <span className="flex text-lg items-center gap-1.5">
