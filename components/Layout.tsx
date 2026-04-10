@@ -193,7 +193,7 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
   return (
     <div className="min-h-screen flex flex-col">
       {/* Top Bar */}
-      <div className="bg-slate-900 text-slate-300  py-2 hidden md:block">
+      <div className="bg-slate-900 text-slate-300  py-[4px] hidden md:block">
         <div className="max-w-7xl  px-4  mx-auto  flex justify-between items-center">
           <div className="flex gap-6">
             <span className="flex items-center text-lg gap-1.5">
@@ -496,17 +496,20 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </p>
             <div className="flex gap-4">
               <a
-                href="#"
+                href="https://wa.me/8801714169153"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all"
+              >
+                <MessageCircle size={18} />
+              </a>
+              <a
+                href="https://www.facebook.com/TSEengineers"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all"
               >
                 <Facebook size={18} />
-              </a>
-
-              <a
-                href="#"
-                className="w-10 h-10 rounded-full bg-slate-800 flex items-center justify-center hover:bg-emerald-600 hover:text-white transition-all"
-              >
-                <Phone size={18} />
               </a>
               <a
                 href="#"
