@@ -338,11 +338,68 @@ export const About = () => {
 /* ----------------------------- CONTACT (BTech-style) ----------------------------- */
 
 export const Contact = () => {
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    service: "",
+    subject: "",
+    message: "",
+  });
+
+  const handleChange = (
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
+  ) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value,
+    });
+  };
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+
+    try {
+      const res = await fetch(
+        "https://formsubmit.co/ajax/techsolutionsengineers@gmail.com",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Accept: "application/json",
+          },
+          body: JSON.stringify({
+            name: formData.name,
+            email: formData.email,
+            phone: formData.phone,
+            service: formData.service,
+            subject: formData.subject,
+            message: formData.message,
+            _subject: `New Contact: ${formData.subject}`,
+            _captcha: "false",
+          }),
+        },
+      );
+
+      const data = await res.json();
+
+      if (data.success === "true" || data.success === true) {
+        setSubmitted(true);
+        setFormData({
+          name: "",
+          email: "",
+          phone: "",
+          service: "",
+          subject: "",
+          message: "",
+        });
+      }
+    } catch (err) {
+      alert("Something went wrong");
+    }
   };
 
   return (
@@ -372,7 +429,8 @@ export const Contact = () => {
                 <div>
                   <h4 className="font-black text-slate-900">Office</h4>
                   <p className="text-sm text-slate-600">
-                    Your Office Address, Dhaka, Bangladesh
+                    P# 293, Jamtola Mor, Shadhinota Sarani Road, North Badda,
+                    Dhaka-1212
                   </p>
                 </div>
               </div>
@@ -383,9 +441,7 @@ export const Contact = () => {
                 </div>
                 <div>
                   <h4 className="font-black text-slate-900">Phone</h4>
-                  <p className="text-sm text-slate-600">
-                    +880 17XX XXXXXX <br /> +880 17XX XXXXXX
-                  </p>
+                  <p className="text-sm text-slate-600">+88 01714 169153</p>
                 </div>
               </div>
 
@@ -396,18 +452,8 @@ export const Contact = () => {
                 <div>
                   <h4 className="font-black text-slate-900">Email</h4>
                   <p className="text-sm text-slate-600">
-                    info@yourcompany.com <br /> support@yourcompany.com
+                    techsolutionsengineers@gmail.com{" "}
                   </p>
-                </div>
-              </div>
-
-              <div className="flex gap-4">
-                <div className="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-700 flex items-center justify-center shrink-0">
-                  <Globe />
-                </div>
-                <div>
-                  <h4 className="font-black text-slate-900">Website</h4>
-                  <p className="text-sm text-slate-600">www.yourcompany.com</p>
                 </div>
               </div>
 
@@ -467,6 +513,8 @@ export const Contact = () => {
                         required
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="Your name"
+                        value={formData.name}
+                        onChange={handleChange}
                       />
                     </div>
                     <div className="space-y-2">
@@ -478,6 +526,8 @@ export const Contact = () => {
                         type="email"
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="your@email.com"
+                        value={formData.email}
+                        onChange={handleChange}
                       />
                     </div>
                   </div>
@@ -491,6 +541,8 @@ export const Contact = () => {
                         required
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="+880 1XXX XXXXXX"
+                        value={formData.phone}
+                        onChange={handleChange}
                       />
                     </div>
                     <div className="space-y-2">
@@ -501,6 +553,8 @@ export const Contact = () => {
                         required
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors bg-white"
                         defaultValue=""
+                        value={formData.service}
+                        onChange={handleChange}
                       >
                         <option value="" disabled>
                           Select a service
@@ -523,6 +577,8 @@ export const Contact = () => {
                       required
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                       placeholder="Project / quotation / support"
+                      value={formData.subject}
+                      onChange={handleChange}
                     />
                   </div>
 
@@ -532,6 +588,8 @@ export const Contact = () => {
                     </label>
                     <textarea
                       required
+                      value={formData.message}
+                      onChange={handleChange}
                       rows={5}
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                       placeholder="Write details (location, machine type, requirements, timeline)..."
