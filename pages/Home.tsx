@@ -446,6 +446,7 @@ export const Home = () => {
         title="Home"
         description="Welcome to tse - Bangladesh's best tech shop for components and laptops."
       />
+
       <Hero />
       {/* Trust Badges – Industrial / Engineering */}
       <div className="max-w-7xl mx-auto px-4 py-12">
@@ -491,6 +492,7 @@ export const Home = () => {
           ))}
         </div>
       </div>
+
       {/* Industries We Serve */}
       <section className="py-16 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
@@ -708,7 +710,129 @@ export const Home = () => {
           </div>
         </div>
       </section>
-      x{/* Category Grid */}
+      {/* How We Work */}
+      <section className="py-20 bg-white border-t border-slate-100">
+        <div className="max-w-7xl mx-auto px-4">
+          {/* Section Header */}
+          <div className="max-w-3xl mb-14">
+            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
+              How We Work
+            </h2>
+            <p className="mt-4 text-slate-600 leading-relaxed">
+              A structured, engineering-driven process to ensure clarity,
+              reliability, and long-term performance.
+            </p>
+          </div>
+
+          {/* Steps */}
+          <div className="grid grid-cols-1 md:grid-cols-4 gap-8 relative">
+            {/* Step 1 */}
+            <div className="relative bg-slate-50 border border-slate-200 rounded-3xl p-7">
+              <span className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black">
+                01
+              </span>
+
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-5">
+                <ClipboardList className="text-emerald-600" />
+              </div>
+
+              <h3 className="font-black text-slate-900 mb-2">
+                Requirement & Site Visit
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                We understand your process, machine condition, control
+                requirements, and operational challenges through discussion or
+                on-site inspection.
+              </p>
+            </div>
+
+            {/* Step 2 */}
+            <div className="relative bg-slate-50 border border-slate-200 rounded-3xl p-7">
+              <span className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black">
+                02
+              </span>
+
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-5">
+                <FileText className="text-indigo-600" />
+              </div>
+
+              <h3 className="font-black text-slate-900 mb-2">Proposal & BOQ</h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                We prepare a clear technical proposal including solution
+                approach, component list, timeline, and cost breakdown.
+              </p>
+            </div>
+
+            {/* Step 3 */}
+            <div className="relative bg-slate-50 border border-slate-200 rounded-3xl p-7">
+              <span className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black">
+                03
+              </span>
+
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-5">
+                <Cog className="text-amber-600" />
+              </div>
+
+              <h3 className="font-black text-slate-900 mb-2">
+                Installation & Commissioning
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                Panel installation, wiring, PLC/HMI programming, testing, and
+                commissioning are completed following safety and engineering
+                standards.
+              </p>
+            </div>
+
+            {/* Step 4 */}
+            <div className="relative bg-slate-50 border border-slate-200 rounded-3xl p-7">
+              <span className="absolute -top-4 -left-4 w-10 h-10 rounded-full bg-emerald-600 text-white flex items-center justify-center font-black">
+                04
+              </span>
+
+              <div className="w-12 h-12 rounded-2xl bg-white border border-slate-200 flex items-center justify-center mb-5">
+                <CheckCircle2 className="text-emerald-600" />
+              </div>
+
+              <h3 className="font-black text-slate-900 mb-2">
+                Handover & Support
+              </h3>
+              <p className="text-sm text-slate-600 leading-relaxed">
+                System handover with documentation, basic training, and ongoing
+                support for troubleshooting, upgrades, and AMC.
+              </p>
+            </div>
+          </div>
+
+          {/* Bottom CTA */}
+          <div className="mt-14 flex flex-col md:flex-row md:items-center md:justify-between gap-6 bg-slate-900 rounded-3xl p-8">
+            <div className="max-w-2xl">
+              <h4 className="text-xl font-black text-white">
+                Looking for a reliable automation partner?
+              </h4>
+              <p className="mt-2 text-slate-300">
+                Start with a discussion. We’ll guide you through the right
+                solution—step by step.
+              </p>
+            </div>
+
+            <div className="flex gap-3">
+              <Link to="/contact">
+                <Button className="rounded-full px-6">Book Site Visit</Button>
+              </Link>
+              <Link to="/contact">
+                <Button
+                  variant="outline"
+                  className="rounded-full px-6 border-white/40 text-white hover:bg-white/10"
+                >
+                  Request Proposal
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Category Grid */}
       <section className="bg-slate-50 py-16">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex justify-between items-end mb-8">
@@ -738,97 +862,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
-      {/* Industries We Serve */}
-      <section className="py-16 bg-white border-t border-slate-100">
-        <div className="max-w-7xl mx-auto px-4">
-          {/* Header */}
-          <div className="max-w-3xl mb-10">
-            <h2 className="text-3xl md:text-4xl font-black text-slate-900 tracking-tight">
-              Industries We Serve
-            </h2>
-            <p className="mt-4 text-slate-600 leading-relaxed">
-              Our automation and electrical solutions are trusted across
-              multiple industries where uptime, safety, and process reliability
-              matter.
-            </p>
-          </div>
 
-          {/* Chips */}
-          <div className="flex flex-wrap gap-4">
-            {[
-              {
-                icon: <Shirt className="text-emerald-700" />,
-                label: "Textile & Garments",
-              },
-              {
-                icon: <Factory className="text-indigo-700" />,
-                label: "Pharmaceutical",
-              },
-              {
-                icon: <Utensils className="text-amber-700" />,
-                label: "Food & Beverage",
-              },
-              {
-                icon: <Zap className="text-emerald-700" />,
-                label: "Power & Utilities",
-              },
-              {
-                icon: <Package className="text-indigo-700" />,
-                label: "Packaging & Printing",
-              },
-              {
-                icon: <Building className="text-amber-700" />,
-                label: "Steel & Metal",
-              },
-              {
-                icon: <Cpu className="text-slate-800" />,
-                label: "Electronics & Assembly",
-              },
-              {
-                icon: <Printer className="text-slate-700" />,
-                label: "Paper & Printing",
-              },
-              {
-                icon: <Fuel className="text-red-600" />, // or Droplet if Fuel not available
-                label: "Oil & Gas",
-              },
-              {
-                icon: <Droplet className="text-blue-600" />,
-                label: "Water Treatment",
-              },
-              {
-                icon: <Leaf className="text-gray-700" />,
-                label: "Feed & Agriculture",
-              },
-            ].map((item, idx) => (
-              <div
-                key={idx}
-                className="group inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-50 border border-slate-200 hover:bg-white hover:shadow-md transition-all cursor-default"
-              >
-                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
-                  {item.icon}
-                </div>
-                <span className="text-sm font-black text-slate-800">
-                  {item.label}
-                </span>
-              </div>
-            ))}
-          </div>
-
-          {/* Bottom Note */}
-          <div className="mt-10 rounded-3xl bg-slate-50 border border-slate-200 p-6 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-            <p className="text-sm text-slate-600 max-w-2xl">
-              Don’t see your industry listed? Our team adapts solutions based on
-              process requirements, control architecture, and operational goals.
-            </p>
-            <Link to="/contact">
-              <Button variant="outline" className="rounded-full px-6">
-                Discuss Your Industry
-              </Button>
-            </Link>
-          </div>
-        </div>
-      </section>
       {/* Hot Deals */}
       <section className="py-16">
         <div className="max-w-7xl mx-auto px-4">
@@ -850,6 +884,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
+
       <section className="px-4 py-8">
         <div className="max-w-7xl mx-auto bg-slate-900 rounded-3xl p-8 md:p-12 relative overflow-hidden flex flex-col md:flex-row items-center justify-between gap-8">
           {/* Decorative shape */}
@@ -891,6 +926,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
+
       <section className="py-20 bg-slate-50 border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
           <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-6 mb-12">
@@ -1098,6 +1134,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
+
       {/* Popular Brands */}
       <section className="py-16 bg-white border-y border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
@@ -1116,6 +1153,7 @@ export const Home = () => {
           </div>
         </div>
       </section>
+
       {/* Reviews / Testimonials – Industrial Style */}
       <section className="py-20 bg-white border-t border-slate-100">
         <div className="max-w-7xl mx-auto px-4">
