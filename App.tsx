@@ -6,10 +6,12 @@ import { ProductDetail } from "./pages/ProductDetail";
 import { Account } from "./pages/Account";
 import { About, Contact } from "./pages/AboutContact";
 import Clients from "./pages/Clients";
+import { Toaster } from "react-hot-toast";
 
 const App: React.FC = () => {
   return (
     <Router>
+      <Toaster position="top-right" reverseOrder={false} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/shop" element={<Shop />} />

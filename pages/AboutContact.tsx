@@ -19,6 +19,7 @@ import {
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { Button } from "../components/UI";
+import toast from "react-hot-toast";
 
 /* ----------------------------- ABOUT (BTech-style) ----------------------------- */
 
@@ -387,15 +388,10 @@ export const Contact = () => {
       const data = await res.json();
 
       if (data.success === "true" || data.success === true) {
+        toast.success("Message sent successfully ✅");
         setSubmitted(true);
-        setFormData({
-          name: "",
-          email: "",
-          phone: "",
-          service: "",
-          subject: "",
-          message: "",
-        });
+      } else {
+        toast.error("Failed to send message ❌");
       }
     } catch (err) {
       alert("Something went wrong");
@@ -514,6 +510,7 @@ export const Contact = () => {
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="Your name"
                         value={formData.name}
+                        name="name"
                         onChange={handleChange}
                       />
                     </div>
@@ -524,6 +521,7 @@ export const Contact = () => {
                       <input
                         required
                         type="email"
+                        name="email"
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="your@email.com"
                         value={formData.email}
@@ -539,6 +537,7 @@ export const Contact = () => {
                       </label>
                       <input
                         required
+                        name="phone"
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                         placeholder="+880 1XXX XXXXXX"
                         value={formData.phone}
@@ -554,6 +553,7 @@ export const Contact = () => {
                         className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors bg-white"
                         defaultValue=""
                         value={formData.service}
+                        name="service"
                         onChange={handleChange}
                       >
                         <option value="" disabled>
@@ -578,6 +578,7 @@ export const Contact = () => {
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                       placeholder="Project / quotation / support"
                       value={formData.subject}
+                      name="subject"
                       onChange={handleChange}
                     />
                   </div>
@@ -590,6 +591,7 @@ export const Contact = () => {
                       required
                       value={formData.message}
                       onChange={handleChange}
+                      name="message"
                       rows={5}
                       className="w-full px-4 py-3 rounded-2xl border border-slate-200 outline-none focus:border-emerald-500 transition-colors"
                       placeholder="Write details (location, machine type, requirements, timeline)..."
