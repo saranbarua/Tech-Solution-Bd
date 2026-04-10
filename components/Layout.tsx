@@ -14,6 +14,8 @@ import {
   PhoneCall,
   Youtube,
   Trash2,
+  PhoneForwardedIcon,
+  MessageCircle,
 } from "lucide-react";
 import { dataService } from "../services/dataService";
 import { CategoryNode, Product } from "../types";
@@ -194,12 +196,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
       <div className="bg-slate-900 text-slate-300  py-2 px-4 hidden md:block">
         <div className="max-w-7xl mx-auto  flex justify-between items-center">
           <div className="flex gap-6">
+            <span className="flex items-center text-lg gap-1.5">
+              <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–7PM
+            </span>
             <span className="flex items-center text-lg gap-1.5 ">
               <Phone size={18} className="text-emerald-500" />
               +88 01714 169153
-            </span>
-            <span className="flex items-center text-lg gap-1.5">
-              <Clock size={14} className="text-emerald-500" /> Sat–Thu 10AM–7PM
             </span>
             <span className="flex text-lg items-center gap-1.5">
               <Mail size={18} className="text-emerald-500" />{" "}
@@ -207,12 +209,22 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </span>
           </div>
           <div className="flex text-lg gap-4">
-            <Link to="/about" className="hover:text-white transition-colors">
-              About Us
-            </Link>
-            <Link to="/contact" className="hover:text-white transition-colors">
-              Contact
-            </Link>
+            <a
+              href="https://wa.me/8801714169153"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-green-500 text-white transition-all"
+            >
+              <MessageCircle size={18} />
+            </a>
+            <a
+              href="https://www.facebook.com/TSEengineers"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="w-10 h-10 rounded-full flex items-center justify-center bg-green-500 text-white transition-all"
+            >
+              <Facebook size={18} />
+            </a>
           </div>
         </div>
       </div>
@@ -408,6 +420,18 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
               className="px-4 py-2 font-medium text-slate-700 hover:text-emerald-600 transition-colors"
             >
               Clients
+            </Link>
+            <Link
+              to="/about"
+              className="px-4 py-2 font-medium text-slate-700 hover:text-emerald-600 transition-colors"
+            >
+              About Us
+            </Link>
+            <Link
+              to="/contact"
+              className="px-4 py-2 font-medium text-slate-700 hover:text-emerald-600 transition-colors"
+            >
+              Contact Us
             </Link>
           </nav>
         </div>
