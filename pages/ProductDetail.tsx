@@ -371,7 +371,7 @@ export const ProductDetail = () => {
                 />
               </div>
             </div>
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 shadow-sm">
+            <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 shadow-sm">
               <div>
                 <p className="text-[13px] font-black text-slate-900">
                   Interested in this product?
@@ -509,29 +509,6 @@ export const ProductDetail = () => {
                         <Bullet text="2 Analog Output" />
                         <Bullet text="Relay: 2 NO & 2 NC" />
                       </ul>
-                    </div>
-                  </div>
-
-                  {/* ✅ Warranty Strip */}
-                  <div className="mt-4 rounded-2xl border border-slate-200 bg-white p-4">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
-                      <div>
-                        <p className="text-xs font-bold text-slate-900">
-                          Warranty
-                        </p>
-                        <p className="text-[12px] text-slate-500 mt-1">
-                          01 Year warranty coverage (terms & conditions apply).
-                        </p>
-                      </div>
-
-                      <div className="inline-flex items-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2">
-                        <span className="text-[11px] font-semibold text-slate-600">
-                          Suitable for
-                        </span>
-                        <span className="text-[11px] font-bold text-slate-900">
-                          Industrial VFD use
-                        </span>
-                      </div>
                     </div>
                   </div>
                 </div>
