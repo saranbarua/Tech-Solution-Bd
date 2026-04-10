@@ -951,9 +951,9 @@ export const Home = () => {
       </section>
 
       {/* Hot Deals */}
-      <section className="py-16">
+      <section className="py-8">
         <div className="max-w-7xl mx-auto px-4">
-          <div className="flex items-center justify-between mb-8">
+          <div className="flex items-center justify-between">
             <h2 className="text-2xl font-black text-slate-900 border-l-4 border-amber-500 pl-4">
               Hot Deals of the Week
             </h2>
