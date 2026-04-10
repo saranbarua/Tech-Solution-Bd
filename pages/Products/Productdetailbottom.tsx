@@ -601,7 +601,7 @@ export const ProductBottomSection = () => {
 
   const tabs: { id: Tab; label: string; icon: React.FC<any> }[] = [
     { id: "specs", label: "Specifications", icon: Zap },
-    { id: "terms", label: "Terms & Warranty", icon: ShieldCheck },
+    { id: "terms", label: "Terms & Conditions", icon: ShieldCheck },
     { id: "reviews", label: "Reviews", icon: MessageSquare },
   ];
 

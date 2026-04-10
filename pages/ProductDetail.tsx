@@ -371,7 +371,30 @@ export const ProductDetail = () => {
                 />
               </div>
             </div>
-            <ProductBottomSection />
+            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 shadow-sm">
+              <div>
+                <p className="text-[13px] font-black text-slate-900">
+                  Interested in this product?
+                </p>
+                <p className="text-[12px] text-slate-500 mt-0.5">
+                  Contact us for bulk pricing, lead time, and availability.
+                </p>
+              </div>
+              <div className="flex gap-2 shrink-0">
+                <Link
+                  to={"/contact"}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-[13px] font-semibold hover:bg-slate-800 transition-colors"
+                >
+                  Ask for Price
+                </Link>
+                <a
+                  href="tel:+8801700000000"
+                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition-colors"
+                >
+                  Call Us
+                </a>
+              </div>
+            </div>
           </div>
 
           {/* RIGHT: Details */}
@@ -436,7 +459,7 @@ export const ProductDetail = () => {
                     </div>
 
                     <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-3 py-1.5">
-                      <span className="text-[11px] font-semibold tracking-wide">
+                      <span className="text-[16px] font-semibold tracking-wide">
                         CV900N
                       </span>
                     </div>
@@ -515,32 +538,9 @@ export const ProductDetail = () => {
               </div>
             </div>
             {/* Ask price strip */}
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5 flex flex-col sm:flex-row items-center justify-between gap-4 mb-8 shadow-sm">
-              <div>
-                <p className="text-[13px] font-black text-slate-900">
-                  Interested in this product?
-                </p>
-                <p className="text-[12px] text-slate-500 mt-0.5">
-                  Contact us for bulk pricing, lead time, and availability.
-                </p>
-              </div>
-              <div className="flex gap-2 shrink-0">
-                <Link
-                  to={"/contact"}
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl bg-slate-900 text-white text-[13px] font-semibold hover:bg-slate-800 transition-colors"
-                >
-                  Ask for Price
-                </Link>
-                <a
-                  href="tel:+8801700000000"
-                  className="inline-flex items-center gap-2 px-5 py-2.5 rounded-xl border border-slate-200 text-slate-700 text-[13px] font-semibold hover:bg-slate-50 transition-colors"
-                >
-                  Call Us
-                </a>
-              </div>
-            </div>
           </div>
         </div>
+        <ProductBottomSection />
       </div>
 
       <ZoomModal
