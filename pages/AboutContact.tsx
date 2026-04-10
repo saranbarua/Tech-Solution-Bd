@@ -615,7 +615,7 @@ export const Contact = () => {
                 className="w-full h-full"
                 loading="lazy"
                 referrerPolicy="no-referrer-when-downgrade"
-                src="https://www.google.com/maps?q=Dhaka%20Bangladesh&output=embed"
+                src="https://www.google.com/maps?q=293,Jamtola Mor,Shadhinota Sarani Road,Uttar Badda,Dhaka-1212&output=embed"
               />
             </div>
           </div>
