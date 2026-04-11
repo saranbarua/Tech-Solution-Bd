@@ -40,6 +40,7 @@ import {
   Leaf,
   Sun,
   Wind,
+  GlassWaterIcon,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -511,7 +512,7 @@ export const Home = () => {
           </div>
 
           {/* Chips */}
-          <div className="flex flex-wrap gap-4">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
             {[
               {
                 icon: <Shirt className="text-emerald-700" />,
@@ -543,10 +544,10 @@ export const Home = () => {
               },
               {
                 icon: <Printer className="text-slate-700" />,
-                label: "Paper & Printing",
+                label: "Paper & Pulp",
               },
               {
-                icon: <Fuel className="text-red-600" />, // or Droplet if Fuel not available
+                icon: <Fuel className="text-red-600" />,
                 label: "Oil & Gas",
               },
               {
@@ -567,17 +568,21 @@ export const Home = () => {
               },
               {
                 icon: <Wind className="text-gray-700" />,
-                label: "Next HVAC Systems",
+                label: "HVAC Systems",
+              },
+              {
+                icon: <GlassWaterIcon className="text-gray-700" />,
+                label: "Ceramics & Glass",
               },
             ].map((item, idx) => (
               <div
                 key={idx}
                 className="group inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-50 border border-slate-200 hover:bg-white hover:shadow-md transition-all cursor-default"
               >
-                <div className="w-8 h-8 rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
+                <div className="w-8 h-8  rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {item.icon}
                 </div>
-                <span className="text-sm font-black text-slate-800">
+                <span className="text-sm  font-black text-slate-800">
                   {item.label}
                 </span>
               </div>
