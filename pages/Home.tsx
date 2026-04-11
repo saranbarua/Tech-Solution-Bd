@@ -544,7 +544,7 @@ export const Home = () => {
               },
               {
                 icon: <Printer className="text-slate-700" />,
-                label: "Paper & Pulp",
+                label: "Pulp & Paper",
               },
               {
                 icon: <Fuel className="text-red-600" />,

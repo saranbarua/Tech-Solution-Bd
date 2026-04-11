@@ -154,6 +154,7 @@ export const Shop = () => {
   const [categories, setCategories] = useState<CategoryNode[]>([]);
   const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
 
   const [selectedCat, setSelectedCat] = useState(
     searchParams.get("category") || "All",
@@ -260,22 +261,13 @@ export const Shop = () => {
       <div className="max-w-7xl mx-auto px-4 py-8">
         <Breadcrumbs items={[{ label: "Shop" }]} />
 
-        <div className="flex flex-col lg:flex-row gap-8">
+        <div className="flex flex-col lg:flex-row gap-4">
           {/* Sidebar Filters */}
           <aside className="w-full lg:w-64 space-y-8">
-            <div className="flex items-center gap-2 mb-6 lg:hidden">
-              <Button variant="outline" className="flex-1 gap-2">
-                <Filter size={18} /> Filter
-              </Button>
-              <Button variant="outline" className="flex-1 gap-2">
-                <SlidersHorizontal size={18} /> Sort
-              </Button>
-            </div>
-
             <div className="hidden lg:block space-y-8 sticky top-24">
               {/* Category Filter (Tree) */}
               <div>
-                <h4 className="font-bold text-slate-900 mb-4 pb-2 border-b">
+                <h4 className="font-bold text-slate-900 mb-2 pb-2 border-b">
                   Categories
                 </h4>
 
@@ -299,10 +291,21 @@ export const Shop = () => {
               </div>
             </div>
           </aside>
-
+          <div className="flex items-center gap-2 mb-2 lg:hidden">
+            <Button
+              variant="outline"
+              className="flex-1 gap-2"
+              onClick={() => setIsFilterOpen(true)}
+            >
+              <Filter size={18} /> Filter
+            </Button>
+            <Button variant="outline" className="flex-1 gap-2">
+              <SlidersHorizontal size={18} /> Sort
+            </Button>
+          </div>
           {/* Product Grid Area */}
           <main className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-8">
+            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
               <div>
                 <h1 className="text-2xl font-black text-slate-900">
                   {selectedCat === "All" ? "All Products" : selectedCat}
@@ -389,6 +392,59 @@ export const Shop = () => {
               </button>
             </div>
           </main>
+
+          <div
+            className={`fixed inset-0 z-[100] lg:hidden transition-opacity duration-300 ${
+              isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+            }`}
+          >
+            <div
+              className="absolute inset-0 bg-slate-900/50"
+              onClick={() => setIsFilterOpen(false)}
+            />
+
+            <div
+              className={`absolute left-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-300 ${
+                isFilterOpen ? "translate-x-0" : "-translate-x-full"
+              }`}
+            >
+              <div className="p-4 border-b flex items-center justify-between">
+                <h3 className="font-bold text-slate-900">Categories</h3>
+                <button onClick={() => setIsFilterOpen(false)}>
+                  <ChevronDown className="rotate-90" size={20} />
+                </button>
+              </div>
+
+              <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">
+                <button
+                  onClick={() => {
+                    setSelectedCat("All");
+                    setIsFilterOpen(false);
+                  }}
+                  className={`block w-full text-left text-sm py-2 rounded-lg px-2 transition-colors ${
+                    selectedCat === "All"
+                      ? "text-emerald-700 font-bold bg-emerald-50"
+                      : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"
+                  }`}
+                >
+                  All Categories
+                </button>
+
+                <div className="mt-2">
+                  <CategoryTreeButtons
+                    nodes={categories}
+                    selectedSlug={selectedCat}
+                    onSelect={(slug) => {
+                      setSelectedCat(slug);
+                      setIsFilterOpen(false);
+                    }}
+                    openNodes={openNodes}
+                    setOpenNodes={setOpenNodes}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
         </div>
       </div>
     </Layout>
