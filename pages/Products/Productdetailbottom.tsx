@@ -11,101 +11,39 @@ import {
   ThumbsUp,
   Send,
 } from "lucide-react";
-import { Link } from "react-router-dom";
+import apiurl from "@/src/apiUrl/apiUrl";
 
 /* ─────────────────────────────────────────────
-   TYPES
+   TYPES (matching API response)
 ───────────────────────────────────────────── */
-type Tab = "specs" | "terms" | "reviews";
-
-interface ReviewItem {
-  id: number;
-  name: string;
-  avatar: string;
-  rating: number;
-  date: string;
-  title: string;
-  body: string;
-  helpful: number;
-  verified: boolean;
+export interface ProductSpec {
+  id: string;
+  key: string;
+  value: string;
 }
 
-/* ─────────────────────────────────────────────
-   MOCK DATA – swap with real data / props
-───────────────────────────────────────────── */
-const SPECS = [
-  {
-    group: "Electrical",
-    rows: [
-      { label: "Input Voltage", value: "1PH, 220–260V AC" },
-      { label: "Output Voltage", value: "1PH, 0–260V AC" },
-      { label: "Capacity", value: "0.75 KW" },
-      { label: "Frequency Range", value: "0.2 – 500 Hz" },
-      { label: "Output Current", value: "4.5 A" },
-      { label: "Efficiency", value: "≥ 93%" },
-    ],
-  },
-  {
-    group: "Control & Interface",
-    rows: [
-      { label: "Control Mode", value: "PID / V/F / Sensorless Vector" },
-      { label: "Communication", value: "RS485 (Modbus RTU)" },
-      { label: "Display", value: "Removable LED Keypad" },
-      { label: "Digital Input", value: "6 Channels" },
-      { label: "Digital Output", value: "2 Channels" },
-      { label: "Analog Input", value: "2 Channels (0–10V / 4–20mA)" },
-      { label: "Analog Output", value: "2 Channels" },
-      { label: "Relay Output", value: "2 NO + 2 NC" },
-    ],
-  },
-  {
-    group: "Physical",
-    rows: [
-      { label: "Brand", value: "Canroon" },
-      { label: "Origin", value: "Made in China" },
-      { label: "Protection Class", value: "IP20" },
-      { label: "Cooling Method", value: "Forced Air Cooling" },
-      { label: "Ambient Temp", value: "-10°C to +40°C" },
-      { label: "Humidity", value: "≤ 95% RH, Non-condensing" },
-    ],
-  },
-];
+export interface ProductTerm {
+  id: string;
+  title: string;
+  content: string;
+}
 
-const INITIAL_REVIEWS: ReviewItem[] = [
-  {
-    id: 1,
-    name: "Rafiul Islam",
-    avatar: "RI",
-    rating: 5,
-    date: "12 Mar 2025",
-    title: "Outstanding performance for the price",
-    body: "We've been running this VFD on a 0.75 KW pump for 6 months without a single hiccup. RS485 integration was painless and the removable display is a game-changer for panel installations.",
-    helpful: 14,
-    verified: true,
-  },
-  {
-    id: 2,
-    name: "Nazmul Hasan",
-    avatar: "NH",
-    rating: 4,
-    date: "28 Jan 2025",
-    title: "Great build quality, minor documentation gap",
-    body: "Solid unit overall. PID control is very responsive. Docked one star because the Bangla manual isn't available yet — had to rely on the English version. Support team was responsive though.",
-    helpful: 7,
-    verified: true,
-  },
-  {
-    id: 3,
-    name: "Sumaiya Akter",
-    avatar: "SA",
-    rating: 5,
-    date: "5 Dec 2024",
-    title: "Perfect for our CNC retrofit project",
-    body: "Replaced an older drive and the 0.2–500 Hz range was exactly what we needed. Sink/Source flexibility saved us rewiring headaches. Highly recommended.",
-    helpful: 22,
-    verified: false,
-  },
-];
+export interface ProductReview {
+  id: string;
+  clientName: string;
+  rating: number;
+  comment?: string;
+  createdAt: string;
+}
+
+interface Props {
+  productSlug: string; // for POST /reviews
+  specs: ProductSpec[];
+  terms: ProductTerm[];
+  reviews: ProductReview[];
+}
+
+type Tab = "specs" | "terms" | "reviews";
 
 /* ─────────────────────────────────────────────
    HELPERS
@@ -142,7 +80,13 @@ const RatingStars = ({
   );
 };
 
-const AvatarCircle = ({ initials }: { initials: string }) => {
+const AvatarCircle = ({ name }: { name: string }) => {
+  const initials = name
+    .split(" ")
+    .map((w) => w[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2);
   const palette = [
     "bg-violet-100 text-violet-700",
     "bg-emerald-100 text-emerald-700",
@@ -160,83 +104,60 @@ const AvatarCircle = ({ initials }: { initials: string }) => {
   );
 };
 
+const formatDate = (iso: string) =>
+  new Date(iso).toLocaleDateString("en-GB", {
+    day: "2-digit",
+    month: "short",
+    year: "numeric",
+  });
+
 /* ─────────────────────────────────────────────
    TAB: SPECIFICATIONS
+   Flat key/value list — no groups from API,
+   so we render a clean single table.
 ───────────────────────────────────────────── */
-const SpecsTab = () => {
-  const [openGroup, setOpenGroup] = useState<string | null>(SPECS[0].group);
+const SpecsTab = ({ specs }: { specs: ProductSpec[] }) => {
+  if (!specs.length) {
+    return (
+      <div className="py-12 text-center text-slate-400 text-sm">
+        No specifications available for this product.
+      </div>
+    );
+  }
 
   return (
     <div className="space-y-3">
-      {SPECS.map((g) => {
-        const isOpen = openGroup === g.group;
-        return (
+      <div className="rounded-2xl border border-slate-100 overflow-hidden">
+        {specs.map((s, i) => (
           <div
-            key={g.group}
-            className="rounded-2xl border border-slate-100 overflow-hidden"
+            key={s.id}
+            className={`flex items-center justify-between px-5 py-3 ${
+              i % 2 === 0 ? "bg-slate-50/60" : "bg-white"
+            }`}
           >
-            <button
-              onClick={() => setOpenGroup(isOpen ? null : g.group)}
-              className="w-full flex items-center justify-between px-5 py-3.5 bg-white hover:bg-slate-50 transition-colors"
-            >
-              <span className="text-[13px] font-bold text-slate-800 tracking-tight">
-                {g.group}
-              </span>
-              <ChevronDown
-                size={16}
-                className={`text-slate-400 transition-transform duration-300 ${
-                  isOpen ? "rotate-180" : ""
-                }`}
-              />
-            </button>
-
-            <AnimatePresence initial={false}>
-              {isOpen && (
-                <motion.div
-                  initial={{ height: 0, opacity: 0 }}
-                  animate={{ height: "auto", opacity: 1 }}
-                  exit={{ height: 0, opacity: 0 }}
-                  transition={{ duration: 0.25, ease: "easeInOut" }}
-                  className="overflow-hidden"
-                >
-                  <div className="border-t border-slate-100">
-                    {g.rows.map((r, i) => (
-                      <div
-                        key={r.label}
-                        className={`flex items-center justify-between px-5 py-3 ${
-                          i % 2 === 0 ? "bg-slate-50/60" : "bg-white"
-                        }`}
-                      >
-                        <span className="text-[12px] text-slate-500 font-medium">
-                          {r.label}
-                        </span>
-                        <span className="text-[12px] font-bold text-slate-800 text-right max-w-[55%]">
-                          {r.value}
-                        </span>
-                      </div>
-                    ))}
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
+            <span className="text-[12px] text-slate-500 font-medium">
+              {s.key}
+            </span>
+            <span className="text-[12px] font-bold text-slate-800 text-right max-w-[55%]">
+              {s.value}
+            </span>
           </div>
-        );
-      })}
+        ))}
+      </div>
 
-      {/* Download datasheet CTA */}
+      {/* Datasheet CTA */}
       <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-5 py-4 flex items-center justify-between">
         <div>
           <p className="text-[12px] font-bold text-slate-800">Full Datasheet</p>
           <p className="text-[11px] text-slate-400 mt-0.5">
-            PDF · 2.4 MB · CV900N Series
+            Download product specifications PDF
           </p>
         </div>
         <a
           href="#"
           className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-xl transition-colors"
         >
-          <FileText size={13} />
-          Download
+          <FileText size={13} /> Download
         </a>
       </div>
     </div>
@@ -245,150 +166,147 @@ const SpecsTab = () => {
 
 /* ─────────────────────────────────────────────
    TAB: TERMS & CONDITIONS
+   Dynamic from API — replaces hardcoded TERMS
 ───────────────────────────────────────────── */
-const TERMS = [
-  {
-    icon: ShieldCheck,
-    title: "Warranty Coverage",
-    body: "This product carries a 1-year limited warranty against manufacturing defects from the date of purchase. Warranty is non-transferable and applies to the original purchaser only.",
-  },
-  {
-    icon: Zap,
-    title: "Installation & Usage",
-    body: "Installation must be performed by a qualified electrician. Improper wiring, overloading beyond rated capacity, or unauthorized modifications will void the warranty immediately.",
-  },
-  {
-    icon: CheckCircle2,
-    title: "Returns & Replacements",
-    body: "Defective units may be returned within 7 days of delivery with original packaging intact. After 7 days, warranty service applies. Physically damaged units are not eligible for return.",
-  },
-  {
-    icon: FileText,
-    title: "Liability Limitation",
-    body: "We are not liable for indirect, incidental, or consequential damages arising from product use or misuse. Our total liability shall not exceed the original purchase price of the product.",
-  },
-  {
-    icon: MessageSquare,
-    title: "Support & Service",
-    body: "Technical support is available Monday–Saturday, 9AM–6PM. Remote diagnosis via RS485 logs may be requested. On-site service is available in Dhaka at additional cost.",
-  },
-];
+const TERM_ICONS = [ShieldCheck, Zap, CheckCircle2, FileText, MessageSquare];
 
-const TermsTab = () => (
-  <div className="space-y-3">
-    {TERMS.map((t, i) => (
-      <motion.div
-        key={t.title}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: i * 0.06 }}
-        className="flex gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 hover:border-slate-200 transition-colors"
-      >
-        <div className="mt-0.5 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
-          <t.icon size={15} className="text-emerald-600" />
-        </div>
-        <div>
-          <p className="text-[13px] font-bold text-slate-900">{t.title}</p>
-          <p className="text-[12px] text-slate-500 leading-relaxed mt-1">
-            {t.body}
-          </p>
-        </div>
-      </motion.div>
-    ))}
+const TermsTab = ({ terms }: { terms: ProductTerm[] }) => {
+  if (!terms.length) {
+    return (
+      <div className="py-12 text-center text-slate-400 text-sm">
+        No terms available for this product.
+      </div>
+    );
+  }
 
-    <div className="rounded-2xl bg-slate-900 px-5 py-4 text-center">
-      <p className="text-[11px] text-slate-400">
-        By placing an inquiry or order, you agree to our full{" "}
-        <a href="#" className="text-emerald-400 underline underline-offset-2">
-          Terms of Service
-        </a>{" "}
-        and{" "}
-        <a href="#" className="text-emerald-400 underline underline-offset-2">
-          Privacy Policy
-        </a>
-        .
-      </p>
+  return (
+    <div className="space-y-3">
+      {terms.map((t, i) => {
+        const Icon = TERM_ICONS[i % TERM_ICONS.length];
+        return (
+          <motion.div
+            key={t.id}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: i * 0.06 }}
+            className="flex gap-4 rounded-2xl border border-slate-100 bg-white px-5 py-4 hover:border-slate-200 transition-colors"
+          >
+            <div className="mt-0.5 w-8 h-8 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-center shrink-0">
+              <Icon size={15} className="text-emerald-600" />
+            </div>
+            <div>
+              <p className="text-[13px] font-bold text-slate-900">{t.title}</p>
+              <p className="text-[12px] text-slate-500 leading-relaxed mt-1">
+                {t.content}
+              </p>
+            </div>
+          </motion.div>
+        );
+      })}
+
+      <div className="rounded-2xl bg-slate-900 px-5 py-4 text-center">
+        <p className="text-[11px] text-slate-400">
+          By placing an inquiry or order, you agree to our full{" "}
+          <a href="#" className="text-emerald-400 underline underline-offset-2">
+            Terms of Service
+          </a>{" "}
+          and{" "}
+          <a href="#" className="text-emerald-400 underline underline-offset-2">
+            Privacy Policy
+          </a>
+          .
+        </p>
+      </div>
     </div>
-  </div>
-);
+  );
+};
 
 /* ─────────────────────────────────────────────
    TAB: REVIEWS
+   Real approved reviews from API +
+   submit form → POST /customer-panel/products/:slug/reviews
 ───────────────────────────────────────────── */
-const ReviewsTab = () => {
-  const [reviews, setReviews] = useState<ReviewItem[]>(INITIAL_REVIEWS);
-  const [helpedIds, setHelpedIds] = useState<Set<number>>(new Set());
+const ReviewsTab = ({
+  initialReviews,
+  productSlug,
+}: {
+  initialReviews: ProductReview[];
+  productSlug: string;
+}) => {
+  // We show server reviews + any locally submitted (pending) ones
+  const [reviews, setReviews] = useState<ProductReview[]>(initialReviews);
+  const [helpedIds, setHelpedIds] = useState<Set<string>>(new Set());
   const [showForm, setShowForm] = useState(false);
-
-  // New review form state
-  const [form, setForm] = useState({
-    name: "",
-    title: "",
-    body: "",
-    rating: 0,
-  });
+  const [form, setForm] = useState({ clientName: "", comment: "", rating: 0 });
+  const [submitting, setSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [submitError, setSubmitError] = useState("");
 
   const avg = reviews.reduce((a, r) => a + r.rating, 0) / (reviews.length || 1);
-
   const dist = [5, 4, 3, 2, 1].map((s) => ({
     star: s,
     count: reviews.filter((r) => r.rating === s).length,
   }));
 
-  const markHelpful = (id: number) => {
+  const markHelpful = (id: string) => {
     if (helpedIds.has(id)) return;
     setHelpedIds((prev) => new Set([...prev, id]));
-    setReviews((prev) =>
-      prev.map((r) => (r.id === id ? { ...r, helpful: r.helpful + 1 } : r)),
-    );
   };
 
-  const submitReview = () => {
-    if (!form.name || !form.body || form.rating === 0) return;
-    const newR: ReviewItem = {
-      id: Date.now(),
-      name: form.name,
-      avatar: form.name
-        .split(" ")
-        .map((w) => w[0])
-        .join("")
-        .toUpperCase()
-        .slice(0, 2),
-      rating: form.rating,
-      date: new Date().toLocaleDateString("en-GB", {
-        day: "2-digit",
-        month: "short",
-        year: "numeric",
-      }),
-      title: form.title || "Untitled Review",
-      body: form.body,
-      helpful: 0,
-      verified: false,
-    };
-    setReviews((prev) => [newR, ...prev]);
-    setForm({ name: "", title: "", body: "", rating: 0 });
-    setSubmitted(true);
-    setShowForm(false);
-    setTimeout(() => setSubmitted(false), 4000);
+  const buildUrl = (path: string) => {
+    const base = apiurl.mainUrl.endsWith("/")
+      ? apiurl.mainUrl
+      : `${apiurl.mainUrl}/`;
+    return `${base}${path.startsWith("/") ? path.slice(1) : path}`;
+  };
+
+  const submitReview = async () => {
+    if (!form.clientName || form.rating === 0) return;
+    setSubmitting(true);
+    setSubmitError("");
+    try {
+      const res = await fetch(
+        buildUrl(`customer-panel/products/${productSlug}/reviews`),
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            clientName: form.clientName,
+            rating: form.rating,
+            comment: form.comment || undefined,
+          }),
+        },
+      );
+
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error(err?.message || "Failed to submit review");
+      }
+
+      setForm({ clientName: "", comment: "", rating: 0 });
+      setSubmitted(true);
+      setShowForm(false);
+      setTimeout(() => setSubmitted(false), 5000);
+    } catch (e: any) {
+      setSubmitError(e.message || "Something went wrong. Please try again.");
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
     <div className="space-y-5">
       {/* Summary bar */}
       <div className="rounded-2xl border border-slate-100 bg-white p-5 flex flex-col sm:flex-row gap-5">
-        {/* Big number */}
         <div className="flex flex-col items-center justify-center sm:min-w-[100px] text-center">
           <p className="text-5xl font-black text-slate-900 leading-none">
-            {avg.toFixed(1)}
+            {reviews.length ? avg.toFixed(1) : "—"}
           </p>
           <RatingStars value={Math.round(avg)} size={13} />
           <p className="text-[11px] text-slate-400 mt-1">
             {reviews.length} reviews
           </p>
         </div>
-
-        {/* Bar chart */}
         <div className="flex-1 space-y-1.5">
           {dist.map(({ star, count }) => (
             <div key={star} className="flex items-center gap-2">
@@ -400,9 +318,7 @@ const ReviewsTab = () => {
                 <motion.div
                   initial={{ width: 0 }}
                   animate={{
-                    width: `${
-                      reviews.length ? (count / reviews.length) * 100 : 0
-                    }%`,
+                    width: `${reviews.length ? (count / reviews.length) * 100 : 0}%`,
                   }}
                   transition={{ duration: 0.6, ease: "easeOut" }}
                   className="h-full rounded-full bg-amber-400"
@@ -416,13 +332,16 @@ const ReviewsTab = () => {
 
       {/* Write review button */}
       <div className="flex items-center justify-between">
-        <p className="text-[12px] font-semibold text-slate-500">All reviews</p>
+        <p className="text-[12px] font-semibold text-slate-500">
+          {reviews.length
+            ? "Approved reviews"
+            : "No reviews yet — be the first!"}
+        </p>
         <button
           onClick={() => setShowForm((v) => !v)}
           className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white bg-slate-900 hover:bg-slate-800 px-4 py-2 rounded-xl transition-colors"
         >
-          <Star size={12} />
-          Write a Review
+          <Star size={12} /> Write a Review
         </button>
       </div>
 
@@ -437,13 +356,14 @@ const ReviewsTab = () => {
           >
             <CheckCircle2 size={15} className="text-emerald-600" />
             <p className="text-[12px] font-semibold text-emerald-800">
-              Thank you! Your review has been submitted.
+              Thank you! Your review has been submitted and is awaiting
+              approval.
             </p>
           </motion.div>
         )}
       </AnimatePresence>
 
-      {/* Write review form */}
+      {/* Review form */}
       <AnimatePresence>
         {showForm && (
           <motion.div
@@ -469,43 +389,29 @@ const ReviewsTab = () => {
                 />
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-1.5">
-                    Your Name *
-                  </label>
-                  <input
-                    value={form.name}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, name: e.target.value }))
-                    }
-                    placeholder="e.g. Karim Hossain"
-                    className="w-full text-[13px] bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
-                  />
-                </div>
-                <div>
-                  <label className="text-[11px] font-semibold text-slate-500 block mb-1.5">
-                    Review Title
-                  </label>
-                  <input
-                    value={form.title}
-                    onChange={(e) =>
-                      setForm((f) => ({ ...f, title: e.target.value }))
-                    }
-                    placeholder="Summarize your experience"
-                    className="w-full text-[13px] bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
-                  />
-                </div>
+              <div>
+                <label className="text-[11px] font-semibold text-slate-500 block mb-1.5">
+                  Your Name *
+                </label>
+                <input
+                  value={form.clientName}
+                  onChange={(e) =>
+                    setForm((f) => ({ ...f, clientName: e.target.value }))
+                  }
+                  placeholder="e.g. Karim Hossain"
+                  className="w-full text-[13px] bg-white border border-slate-200 rounded-xl px-3 py-2.5 outline-none focus:border-emerald-400 focus:ring-2 focus:ring-emerald-100 transition"
+                />
               </div>
 
               <div>
                 <label className="text-[11px] font-semibold text-slate-500 block mb-1.5">
-                  Your Review *
+                  Your Comment{" "}
+                  <span className="text-slate-400 font-normal">(optional)</span>
                 </label>
                 <textarea
-                  value={form.body}
+                  value={form.comment}
                   onChange={(e) =>
-                    setForm((f) => ({ ...f, body: e.target.value }))
+                    setForm((f) => ({ ...f, comment: e.target.value }))
                   }
                   rows={3}
                   placeholder="Tell us what you liked or disliked about this product..."
@@ -513,20 +419,34 @@ const ReviewsTab = () => {
                 />
               </div>
 
+              {/* Server error */}
+              {submitError && (
+                <p className="text-[12px] text-red-600 font-medium">
+                  {submitError}
+                </p>
+              )}
+
               <div className="flex gap-2 justify-end">
                 <button
-                  onClick={() => setShowForm(false)}
+                  onClick={() => {
+                    setShowForm(false);
+                    setSubmitError("");
+                  }}
                   className="text-[12px] font-semibold text-slate-500 hover:text-slate-700 px-4 py-2 rounded-xl border border-slate-200 bg-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   onClick={submitReview}
-                  disabled={!form.name || !form.body || form.rating === 0}
+                  disabled={!form.clientName || form.rating === 0 || submitting}
                   className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-white bg-emerald-600 hover:bg-emerald-700 disabled:opacity-40 disabled:cursor-not-allowed px-4 py-2 rounded-xl transition-colors"
                 >
-                  <Send size={12} />
-                  Submit Review
+                  {submitting ? (
+                    <span className="w-3 h-3 border-2 border-white/40 border-t-white rounded-full animate-spin" />
+                  ) : (
+                    <Send size={12} />
+                  )}
+                  {submitting ? "Submitting…" : "Submit Review"}
                 </button>
               </div>
             </div>
@@ -535,68 +455,71 @@ const ReviewsTab = () => {
       </AnimatePresence>
 
       {/* Review cards */}
-      <div className="space-y-3">
-        {reviews.map((r, i) => (
-          <motion.div
-            key={r.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: i * 0.05 }}
-            className="rounded-2xl border border-slate-100 bg-white p-5"
-          >
-            <div className="flex items-start justify-between gap-3">
-              <div className="flex items-center gap-3">
-                <AvatarCircle initials={r.avatar} />
-                <div>
-                  <div className="flex items-center gap-2">
+      {reviews.length === 0 ? (
+        <div className="py-10 text-center text-slate-400 text-sm border-2 border-dashed border-slate-100 rounded-2xl">
+          No approved reviews yet.
+        </div>
+      ) : (
+        <div className="space-y-3">
+          {reviews.map((r, i) => (
+            <motion.div
+              key={r.id}
+              initial={{ opacity: 0, y: 10 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: i * 0.05 }}
+              className="rounded-2xl border border-slate-100 bg-white p-5"
+            >
+              <div className="flex items-start justify-between gap-3">
+                <div className="flex items-center gap-3">
+                  <AvatarCircle name={r.clientName} />
+                  <div>
                     <p className="text-[13px] font-bold text-slate-900">
-                      {r.name}
+                      {r.clientName}
                     </p>
-                    {r.verified && (
-                      <span className="inline-flex items-center gap-1 text-[10px] font-semibold text-emerald-700 bg-emerald-50 border border-emerald-100 px-2 py-0.5 rounded-full">
-                        <CheckCircle2 size={9} />
-                        Verified
-                      </span>
-                    )}
+                    <p className="text-[11px] text-slate-400">
+                      {formatDate(r.createdAt)}
+                    </p>
                   </div>
-                  <p className="text-[11px] text-slate-400">{r.date}</p>
                 </div>
+                <RatingStars value={r.rating} size={12} />
               </div>
-              <RatingStars value={r.rating} size={12} />
-            </div>
 
-            <p className="mt-3 text-[13px] font-bold text-slate-800">
-              {r.title}
-            </p>
-            <p className="mt-1.5 text-[12px] text-slate-500 leading-relaxed">
-              {r.body}
-            </p>
+              {r.comment && (
+                <p className="mt-3 text-[12px] text-slate-500 leading-relaxed">
+                  {r.comment}
+                </p>
+              )}
 
-            <div className="mt-4 flex items-center gap-2">
-              <button
-                onClick={() => markHelpful(r.id)}
-                className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
-                  helpedIds.has(r.id)
-                    ? "bg-emerald-50 border-emerald-200 text-emerald-700"
-                    : "bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300"
-                }`}
-              >
-                <ThumbsUp size={11} />
-                Helpful ({r.helpful})
-              </button>
-            </div>
-          </motion.div>
-        ))}
-      </div>
+              <div className="mt-4 flex items-center gap-2">
+                <button
+                  onClick={() => markHelpful(r.id)}
+                  className={`inline-flex items-center gap-1.5 text-[11px] font-semibold px-3 py-1.5 rounded-xl border transition-colors ${
+                    helpedIds.has(r.id)
+                      ? "bg-emerald-50 border-emerald-200 text-emerald-700"
+                      : "bg-slate-50 border-slate-200 text-slate-500 hover:border-slate-300"
+                  }`}
+                >
+                  <ThumbsUp size={11} />
+                  Helpful
+                </button>
+              </div>
+            </motion.div>
+          ))}
+        </div>
+      )}
     </div>
   );
 };
 
 /* ─────────────────────────────────────────────
-   MAIN COMPONENT
-   Drop this below your gallery + detail grid.
+   MAIN EXPORT
 ───────────────────────────────────────────── */
-export const ProductBottomSection = () => {
+export const ProductBottomSection = ({
+  productSlug,
+  specs,
+  terms,
+  reviews,
+}: Props) => {
   const [activeTab, setActiveTab] = useState<Tab>("specs");
 
   const tabs: { id: Tab; label: string; icon: React.FC<any> }[] = [
@@ -606,8 +529,7 @@ export const ProductBottomSection = () => {
   ];
 
   return (
-    <div className="max-w-7xl mx-auto  pb-16 mt-6">
-      {/* Tabs */}
+    <div className="max-w-7xl mx-auto pb-16 mt-6">
       <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-[0_20px_60px_-30px_rgba(15,23,42,0.12)]">
         {/* Tab header */}
         <div className="flex border-b border-slate-100 bg-slate-50/60">
@@ -646,9 +568,14 @@ export const ProductBottomSection = () => {
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === "specs" && <SpecsTab />}
-              {activeTab === "terms" && <TermsTab />}
-              {activeTab === "reviews" && <ReviewsTab />}
+              {activeTab === "specs" && <SpecsTab specs={specs} />}
+              {activeTab === "terms" && <TermsTab terms={terms} />}
+              {activeTab === "reviews" && (
+                <ReviewsTab
+                  initialReviews={reviews}
+                  productSlug={productSlug}
+                />
+              )}
             </motion.div>
           </AnimatePresence>
         </div>

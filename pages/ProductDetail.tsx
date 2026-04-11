@@ -517,7 +517,12 @@ export const ProductDetail = () => {
             {/* Ask price strip */}
           </div>
         </div>
-        <ProductBottomSection />
+        <ProductBottomSection
+          productSlug={product.slug}
+          specs={(product as any).specs ?? []}
+          terms={(product as any).terms ?? []}
+          reviews={(product as any).reviews ?? []}
+        />
       </div>
 
       <ZoomModal
