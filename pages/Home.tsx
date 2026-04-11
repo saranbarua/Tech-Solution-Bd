@@ -577,7 +577,7 @@ export const Home = () => {
             ].map((item, idx) => (
               <div
                 key={idx}
-                className="group inline-flex items-center gap-3 px-5 py-3 rounded-full bg-slate-50 border border-slate-200 hover:bg-white hover:shadow-md transition-all cursor-default"
+                className="group inline-flex items-center gap-3 px-5 py-5 rounded-full bg-slate-50 border border-slate-200 hover:bg-white hover:shadow-md transition-all cursor-default"
               >
                 <div className="w-8 h-8  rounded-full bg-white border border-slate-200 flex items-center justify-center group-hover:scale-110 transition-transform">
                   {item.icon}
