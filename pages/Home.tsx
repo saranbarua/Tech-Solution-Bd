@@ -38,6 +38,8 @@ import {
   Fuel,
   Droplet,
   Leaf,
+  Sun,
+  Wind,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
@@ -553,7 +555,19 @@ export const Home = () => {
               },
               {
                 icon: <Leaf className="text-gray-700" />,
-                label: "Feed & Agriculture",
+                label: "Feed & Agro",
+              },
+              {
+                icon: <Droplet className="text-gray-700" />,
+                label: "Irrigation Pump Projects",
+              },
+              {
+                icon: <Sun className="text-gray-700" />,
+                label: "Solar Systems & Inverters",
+              },
+              {
+                icon: <Wind className="text-gray-700" />,
+                label: "Next HVAC Systems",
               },
             ].map((item, idx) => (
               <div
