@@ -7,7 +7,6 @@ import {
   MessageSquare,
   Zap,
   ShieldCheck,
-  ChevronDown,
   ThumbsUp,
   Send,
 } from "lucide-react";
@@ -20,6 +19,11 @@ export interface ProductSpec {
   id: string;
   key: string;
   value: string;
+}
+export interface ProductDoc {
+  id: string;
+  title: string;
+  fileUrl: string;
 }
 
 export interface ProductTerm {
@@ -37,10 +41,11 @@ export interface ProductReview {
 }
 
 interface Props {
-  productSlug: string; // for POST /reviews
+  productSlug: string;
   specs: ProductSpec[];
   terms: ProductTerm[];
   reviews: ProductReview[];
+  files?: ProductDoc[];
 }
 
 type Tab = "specs" | "terms" | "reviews";
@@ -113,10 +118,16 @@ const formatDate = (iso: string) =>
 
 /* ─────────────────────────────────────────────
    TAB: SPECIFICATIONS
-   Flat key/value list — no groups from API,
-   so we render a clean single table.
+   ✅ FIX: files prop now properly rendered
+   outside the dashed flex container
 ───────────────────────────────────────────── */
-const SpecsTab = ({ specs }: { specs: ProductSpec[] }) => {
+const SpecsTab = ({
+  specs,
+  files = [],
+}: {
+  specs: ProductSpec[];
+  files?: ProductDoc[];
+}) => {
   if (!specs.length) {
     return (
       <div className="py-12 text-center text-slate-400 text-sm">
@@ -126,47 +137,76 @@ const SpecsTab = ({ specs }: { specs: ProductSpec[] }) => {
   }
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-4">
+      {/* Specs table */}
       <div className="rounded-2xl border border-slate-100 overflow-hidden">
         {specs.map((s, i) => (
           <div
             key={s.id}
-            className={`flex items-center justify-between px-5 py-3 ${
+            className={`flex items-start justify-between px-5 py-3 gap-4 ${
               i % 2 === 0 ? "bg-slate-50/60" : "bg-white"
             }`}
           >
-            <span className="text-[12px] text-slate-500 font-medium">
+            <span className="text-[12px] text-slate-500 font-medium shrink-0">
               {s.key}
             </span>
-            <span className="text-[12px] font-bold text-slate-800 text-right max-w-[55%]">
+            <span className="text-[12px] font-bold text-slate-800 text-right whitespace-pre-line">
               {s.value}
             </span>
           </div>
         ))}
       </div>
 
-      {/* Datasheet CTA */}
-      <div className="rounded-2xl border border-dashed border-slate-200 bg-slate-50/50 px-5 py-4 flex items-center justify-between">
-        <div>
-          <p className="text-[12px] font-bold text-slate-800">Full Datasheet</p>
-          <p className="text-[11px] text-slate-400 mt-0.5">
-            Download product specifications PDF
+      {/* ✅ FIX: Datasheets section is now its own block, not nested in a flex container */}
+      {files.length > 0 && (
+        <div className="space-y-2">
+          <p className="text-[12px] font-bold text-slate-800 px-1">
+            Datasheets &amp; Documents
           </p>
+
+          {files.map((doc) => {
+            const fullUrl = `${apiurl.imgUrl}${doc.fileUrl}`;
+            const isPDF = doc.fileUrl.toLowerCase().endsWith(".pdf");
+            const isDOCX = doc.fileUrl.toLowerCase().endsWith(".docx");
+
+            return (
+              <div
+                key={doc.id}
+                className="rounded-xl border border-slate-200 bg-white px-4 py-3 flex items-center justify-between"
+              >
+                <div>
+                  <p className="text-[12px] font-semibold text-slate-800">
+                    {doc.title}
+                  </p>
+                  <p className="text-[11px] text-slate-400">
+                    {isPDF ? "PDF Document" : isDOCX ? "Word Document" : "File"}
+                  </p>
+                </div>
+
+                <a
+                  href={
+                    isDOCX
+                      ? `https://docs.google.com/gview?url=${encodeURIComponent(fullUrl)}&embedded=true`
+                      : fullUrl
+                  }
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-xl transition-colors"
+                >
+                  <FileText size={13} />
+                  View
+                </a>
+              </div>
+            );
+          })}
         </div>
-        <a
-          href="#"
-          className="inline-flex items-center gap-1.5 text-[12px] font-semibold text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-2 rounded-xl transition-colors"
-        >
-          <FileText size={13} /> Download
-        </a>
-      </div>
+      )}
     </div>
   );
 };
 
 /* ─────────────────────────────────────────────
    TAB: TERMS & CONDITIONS
-   Dynamic from API — replaces hardcoded TERMS
 ───────────────────────────────────────────── */
 const TERM_ICONS = [ShieldCheck, Zap, CheckCircle2, FileText, MessageSquare];
 
@@ -223,8 +263,6 @@ const TermsTab = ({ terms }: { terms: ProductTerm[] }) => {
 
 /* ─────────────────────────────────────────────
    TAB: REVIEWS
-   Real approved reviews from API +
-   submit form → POST /customer-panel/products/:slug/reviews
 ───────────────────────────────────────────── */
 const ReviewsTab = ({
   initialReviews,
@@ -233,7 +271,6 @@ const ReviewsTab = ({
   initialReviews: ProductReview[];
   productSlug: string;
 }) => {
-  // We show server reviews + any locally submitted (pending) ones
   const [reviews, setReviews] = useState<ProductReview[]>(initialReviews);
   const [helpedIds, setHelpedIds] = useState<Set<string>>(new Set());
   const [showForm, setShowForm] = useState(false);
@@ -280,7 +317,7 @@ const ReviewsTab = ({
 
       if (!res.ok) {
         const err = await res.json().catch(() => ({}));
-        throw new Error(err?.message || "Failed to submit review");
+        throw new Error((err as any)?.message || "Failed to submit review");
       }
 
       setForm({ clientName: "", comment: "", rating: 0 });
@@ -419,7 +456,6 @@ const ReviewsTab = ({
                 />
               </div>
 
-              {/* Server error */}
               {submitError && (
                 <p className="text-[12px] text-red-600 font-medium">
                   {submitError}
@@ -513,12 +549,14 @@ const ReviewsTab = ({
 
 /* ─────────────────────────────────────────────
    MAIN EXPORT
+   ✅ FIX: files prop is now passed to SpecsTab
 ───────────────────────────────────────────── */
 export const ProductBottomSection = ({
   productSlug,
   specs,
   terms,
   reviews,
+  files = [],
 }: Props) => {
   const [activeTab, setActiveTab] = useState<Tab>("specs");
 
@@ -568,7 +606,10 @@ export const ProductBottomSection = ({
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.2 }}
             >
-              {activeTab === "specs" && <SpecsTab specs={specs} />}
+              {/* ✅ FIX: files prop passed here */}
+              {activeTab === "specs" && (
+                <SpecsTab specs={specs} files={files} />
+              )}
               {activeTab === "terms" && <TermsTab terms={terms} />}
               {activeTab === "reviews" && (
                 <ReviewsTab

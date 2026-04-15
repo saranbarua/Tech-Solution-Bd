@@ -226,7 +226,6 @@ export const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
 
-  console.log(product);
   const [activeIndex, setActiveIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
 
@@ -460,7 +459,7 @@ export const ProductDetail = () => {
 
                     <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-3 py-1.5">
                       <span className="text-[16px] font-semibold tracking-wide">
-                        CV900N
+                        {(product as any).modelNumber || "N/A"}
                       </span>
                     </div>
                   </div>
@@ -536,6 +535,7 @@ export const ProductDetail = () => {
           specs={(product as any).specs ?? []}
           terms={(product as any).terms ?? []}
           reviews={(product as any).reviews ?? []}
+          files={(product as any).docs ?? []}
         />
       </div>
 
