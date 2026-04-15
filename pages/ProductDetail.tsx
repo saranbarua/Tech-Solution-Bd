@@ -226,6 +226,7 @@ export const ProductDetail = () => {
   const [loading, setLoading] = useState(true);
   const [product, setProduct] = useState<Product | null>(null);
 
+  console.log(product);
   const [activeIndex, setActiveIndex] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
 
@@ -277,7 +278,6 @@ export const ProductDetail = () => {
       </Layout>
     );
   }
-  // console.log(product);
 
   if (!product) {
     return (
@@ -465,52 +465,66 @@ export const ProductDetail = () => {
                     </div>
                   </div>
                 </div>
-
                 {/* Content */}
                 <div className="p-5">
-                  {/* Spec grid */}
-                  <p className="text-[10px] uppercase tracking-widest text-slate-400 font-semibold mb-3">
-                    Electrical specifications
-                  </p>
-                  <div className="grid grid-cols-3 gap-2.5">
-                    <SpecPill label="Input" value="1PH, 220–260V AC" accent />
-                    <SpecPill label="Output" value="1PH, 0–260V AC" accent />
-                    <SpecPill label="Capacity" value="0.75 KW" accent />
-                    <SpecPill label="Frequency" value="0.2 – 500 Hz" />
-                    <SpecPill label="Brand" value="Canroon" />
-                    <SpecPill label="Origin" value="Made in China" />
-                  </div>
+                  {product.description ? (
+                    <div className="prose-description">
+                      {product.description.split("\n").map((line, i) => {
+                        const trimmed = line.trim();
 
-                  {/* Divider */}
-                  <div className="my-5 h-px w-full bg-slate-200" />
+                        // Section heading (ends with ":")
+                        if (trimmed.endsWith(":") && !trimmed.startsWith("-")) {
+                          return (
+                            <p
+                              key={i}
+                              className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold mt-5 mb-2 first:mt-0"
+                            >
+                              {trimmed.slice(0, -1)}
+                            </p>
+                          );
+                        }
 
-                  {/* ✅ Feature Grid */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs font-bold text-slate-900">
-                        Control & Modes
-                      </p>
-                      <ul className="mt-3 space-y-2.5">
-                        <Bullet text="Sink/Source both mode available" />
-                        <Bullet text="PID control" />
-                        <Bullet text="RS485 communication" />
-                        <Bullet text="Removable display" />
-                      </ul>
+                        // Bullet line with checkbox markdown
+                        if (trimmed.startsWith("- ")) {
+                          const text = trimmed
+                            .replace(/^-\s+\[[ x]\]\s*/i, "")
+                            .replace(/^-\s+/, "")
+                            .trim();
+
+                          if (!text) return null;
+
+                          return (
+                            <div
+                              key={i}
+                              className="flex items-start gap-2.5 py-1.5 border-b border-slate-100 last:border-0"
+                            >
+                              <span className="mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
+                              <span className="text-[13px] text-slate-700 leading-snug">
+                                {text}
+                              </span>
+                            </div>
+                          );
+                        }
+
+                        // Empty line — small spacer
+                        if (!trimmed) return <div key={i} className="h-1" />;
+
+                        // Plain text fallback
+                        return (
+                          <p
+                            key={i}
+                            className="text-sm text-slate-600 leading-relaxed"
+                          >
+                            {trimmed}
+                          </p>
+                        );
+                      })}
                     </div>
-
-                    <div className="rounded-2xl border border-slate-200 bg-slate-50 p-4">
-                      <p className="text-xs font-bold text-slate-900">
-                        I/O & Relay
-                      </p>
-                      <ul className="mt-3 space-y-2.5">
-                        <Bullet text="6 Digital Input" />
-                        <Bullet text="2 Digital Output" />
-                        <Bullet text="2 Analog Input" />
-                        <Bullet text="2 Analog Output" />
-                        <Bullet text="Relay: 2 NO & 2 NC" />
-                      </ul>
-                    </div>
-                  </div>
+                  ) : (
+                    <p className="text-sm text-slate-400 italic">
+                      No description available.
+                    </p>
+                  )}
                 </div>
               </div>
             </div>
