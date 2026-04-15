@@ -299,6 +299,12 @@ export const ProductDetail = () => {
     );
   }
 
+  const reviews = (product as any).reviews ?? [];
+
+  const avgRating =
+    reviews.reduce((sum: number, r: any) => sum + r.rating, 0) /
+    (reviews.length || 1);
+
   return (
     <Layout>
       <SEO
@@ -408,12 +414,12 @@ export const ProductDetail = () => {
 
             <div className="mt-3 flex items-center gap-2">
               <div className="flex items-center gap-1">
-                {[...Array(5)].map((_, i) => (
+                {[1, 2, 3, 4, 5].map((i) => (
                   <Star
                     key={i}
                     size={14}
                     className={
-                      i < Math.floor((product as any).rating || 0)
+                      i <= Math.round(avgRating)
                         ? "fill-amber-400 text-amber-400"
                         : "text-slate-200"
                     }
@@ -421,8 +427,9 @@ export const ProductDetail = () => {
                 ))}
               </div>
               <span className="text-xs text-slate-400">
-                ({(product as any).reviewsCount || 0} reviews)
+                ({(product as any).reviews?.length || 0} reviews)
               </span>
+
               <span className="text-xs text-slate-300">•</span>
               <span className="text-xs text-slate-500 font-medium">
                 Stock: {(product as any).stock ?? "N/A"}
