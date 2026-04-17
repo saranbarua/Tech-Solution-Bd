@@ -18,6 +18,9 @@ import cl14 from "./cl15.jpeg";
 import cl15 from "./cl16.jpeg";
 import cl16 from "./cl17.jpeg";
 import cl17 from "./cl1s.jpeg";
+import slider1 from "./sl1.webp";
+import slider2 from "./slider2.jpeg";
+import slider3 from "./slider3.jpeg";
 
 export const images = {
   logo,
@@ -38,4 +41,7 @@ export const images = {
   cl15,
   cl16,
   cl17,
+  slider1,
+  slider2,
+  slider3,
 } as const;

@@ -46,6 +46,7 @@ import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Button } from "../components/UI";
 import { dataService } from "../services/dataService";
 import { Product, Category, Brand, Testimonial } from "../types";
+import { images } from "@/public/image/Images";
 
 const Hero = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
@@ -58,7 +59,7 @@ const Hero = () => {
       cta: "Explore Shop",
       link: "/shop",
       bg: "bg-slate-900",
-      img: "https://picsum.photos/seed/industrial/1400/700",
+      img: images.slider1,
       text: "text-white",
       btnVariant: "secondary" as const,
     },
@@ -70,7 +71,7 @@ const Hero = () => {
       cta: "Request Service",
       link: "/shop",
       bg: "bg-emerald-50",
-      img: "https://picsum.photos/seed/service/1400/700",
+      img: images.slider3,
       text: "text-slate-900",
       btnVariant: "primary" as const,
     },
@@ -82,7 +83,8 @@ const Hero = () => {
       cta: "Request a Quote",
       link: "/contact",
       bg: "bg-indigo-50",
-      img: "https://picsum.photos/seed/panel/1400/700",
+      img: images.slider2,
+
       text: "text-slate-900",
       btnVariant: "primary" as const,
     },
