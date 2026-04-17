@@ -11,9 +11,7 @@ import {
   X,
   ChevronDown,
   Facebook,
-  PhoneCall,
   Youtube,
-  Trash2,
   PhoneForwardedIcon,
   MessageCircle,
 } from "lucide-react";
@@ -472,6 +470,9 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
             </div>
             <Link to="/about" className="block text-lg font-medium">
               About Us
+            </Link>
+            <Link to="/clients" className="block text-lg font-medium">
+              Clients
             </Link>
             <Link to="/contact" className="block text-lg font-medium">
               Contact
