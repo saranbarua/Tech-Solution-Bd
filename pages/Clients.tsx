@@ -1,14 +1,24 @@
+import { images } from "@/public/image/Images";
 import { SEO, Layout } from "../components/Layout";
 
 const companyImages = [
-  "https://images.unsplash.com/photo-1520607162513-77705c0f0d4a?w=1200&q=80",
-  "https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80",
-  "https://images.unsplash.com/photo-1560518883-ce09059eeffa?w=1200&q=80",
-  "https://images.unsplash.com/photo-1524813686514-a57563d77965?w=1200&q=80",
-  "https://images.unsplash.com/photo-1517048676732-d65bc937f952?w=1200&q=80",
-  "https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=1200&q=80",
-  "https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?w=1200&q=80",
-  "https://images.unsplash.com/photo-1556740749-887f6717d7e4?w=1200&q=80",
+  images.cl1,
+  images.cl2,
+  images.cl3,
+  images.cl4,
+  images.cl5,
+  images.cl6,
+  images.cl7,
+  images.cl8,
+  images.cl9,
+  images.cl10,
+  images.cl11,
+  images.cl12,
+  images.cl13,
+  images.cl14,
+  images.cl15,
+  images.cl16,
+  images.cl17,
 ];
 const clientLogos = [
   "Meridian",
@@ -42,9 +52,9 @@ const Clients = () => {
               <img
                 src={src}
                 alt="company"
-                className="w-full h-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.08]"
+                className="w-full h-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.08]"
                 style={{
-                  filter: "grayscale(100%) contrast(1.1)",
+                  filter: "contrast(1.1)",
                 }}
               />
 
