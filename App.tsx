@@ -7,6 +7,7 @@ import { Account } from "./pages/Account";
 import { About, Contact } from "./pages/AboutContact";
 import Clients from "./pages/Clients";
 import { Toaster } from "react-hot-toast";
+import PublicPolicy from "./pages/PublicPolicy";
 
 const App: React.FC = () => {
   return (
@@ -20,6 +21,7 @@ const App: React.FC = () => {
         <Route path="/about" element={<About />} />
         <Route path="/contact" element={<Contact />} />
         <Route path="/clients" element={<Clients />} />
+        <Route path="/public-policy" element={<PublicPolicy />} />
       </Routes>
     </Router>
   );

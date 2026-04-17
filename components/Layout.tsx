@@ -556,12 +556,12 @@ export const Layout: React.FC<{ children: React.ReactNode }> = ({
                 </Link>
               </li>
               <li>
-                <a
-                  href="#"
+                <Link
+                  to={"/public-policy"}
                   className="hover:text-emerald-500 transition-colors"
                 >
                   Privacy Policy
-                </a>
+                </Link>
               </li>
               <li>
                 <a
