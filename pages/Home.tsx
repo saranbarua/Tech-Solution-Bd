@@ -96,31 +96,31 @@ const Hero = () => {
   }, []);
 
   return (
-    <section className="relative h-[420px] md:h-[520px] overflow-hidden rounded-3xl mx-4 mt-4 shadow-xl border border-slate-200">
+    <section className="relative mx-4 mt-4 overflow-hidden rounded-2xl sm:rounded-3xl border border-slate-200 shadow-xl h-[360px] sm:h-[420px] md:h-[520px]">
       {slides.map((slide, idx) => (
         <div
           key={idx}
-          className={`absolute inset-0 transition-opacity duration-1000 flex items-center ${
+          className={`absolute inset-0 flex items-center transition-opacity duration-1000 ${
             slide.bg
           } ${idx === currentSlide ? "opacity-100 z-10" : "opacity-0 z-0"}`}
         >
-          {/* Background image */}
           <img
             src={slide.img}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover opacity-35"
+            className="absolute inset-0 h-full w-full object-cover opacity-35"
           />
 
-          {/* Overlay (premium, readable) */}
-          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/70 via-slate-900/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-r from-slate-900/75 via-slate-900/45 to-transparent" />
           {slide.text === "text-slate-900" && (
             <div className="absolute inset-0 bg-white/55" />
           )}
 
-          <div className="relative z-10 max-w-7xl mx-auto px-8 md:px-12">
-            <div className={`max-w-2xl space-y-4 md:space-y-6 ${slide.text}`}>
+          <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-12">
+            <div
+              className={`max-w-2xl space-y-3 sm:space-y-4 md:space-y-6 ${slide.text}`}
+            >
               <span
-                className={`inline-flex items-center gap-2 px-4 py-2 rounded-full text-xs font-black uppercase tracking-widest ${
+                className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 sm:px-4 sm:py-2 text-[10px] sm:text-xs font-black uppercase tracking-widest ${
                   slide.text === "text-white"
                     ? "bg-white/10 text-white border border-white/15"
                     : "bg-slate-900 text-white"
@@ -129,28 +129,28 @@ const Hero = () => {
                 {slide.tag}
               </span>
 
-              <h1 className="text-4xl md:text-6xl font-black leading-tight">
+              <h1 className="text-2xl sm:text-4xl md:text-6xl font-black leading-tight">
                 {slide.title}
               </h1>
 
-              <p className="text-lg md:text-xl opacity-90 font-medium leading-relaxed">
+              <p className="max-w-xl text-sm sm:text-lg md:text-xl opacity-90 font-medium leading-relaxed">
                 {slide.subtitle}
               </p>
 
-              <div className="pt-2 flex flex-col sm:flex-row gap-3">
-                <Link to={slide.link}>
+              <div className="pt-1 flex flex-col sm:flex-row gap-3 sm:items-center">
+                <Link to={slide.link} className="w-full sm:w-auto">
                   <Button
                     variant={slide.btnVariant}
-                    className="rounded-full px-8 py-3 text-lg"
+                    className="w-full sm:w-auto rounded-full px-6 sm:px-8 py-3 text-sm sm:text-lg"
                   >
-                    {slide.cta} <ArrowRight className="ml-2" size={20} />
+                    {slide.cta} <ArrowRight className="ml-2" size={18} />
                   </Button>
                 </Link>
 
-                <Link to="/contact">
+                <Link to="/contact" className="w-full sm:w-auto">
                   <Button
                     variant="outline"
-                    className={`rounded-full px-8 py-3 text-lg ${
+                    className={`w-full sm:w-auto rounded-full px-6 sm:px-8 py-3 text-sm sm:text-lg ${
                       slide.text === "text-white"
                         ? "border-white/40 text-white hover:bg-white/10"
                         : ""
@@ -165,8 +165,7 @@ const Hero = () => {
         </div>
       ))}
 
-      {/* Dots */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-2">
+      <div className="absolute bottom-4 sm:bottom-6 left-1/2 z-20 flex -translate-x-1/2 gap-2">
         {slides.map((_, i) => (
           <button
             key={i}
