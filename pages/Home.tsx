@@ -117,7 +117,7 @@ const Hero = () => {
           <img
             src={slide.img}
             alt=""
-            className={`absolute inset-0 h-full w-full ${slide.imgClass}`}
+            className={`absolute inset-0 object-cover ${slide.imgClass}`}
           />
 
           <div className={`absolute inset-0 ${slide.overlay}`} />
