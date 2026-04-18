@@ -71,7 +71,7 @@ const Hero = () => {
       cta: "Request Service",
       link: "/shop",
       bg: "bg-emerald-50",
-      img: images.slider3,
+      img: images.slider2,
       text: "text-slate-900",
       btnVariant: "primary" as const,
     },
@@ -83,7 +83,7 @@ const Hero = () => {
       cta: "Request a Quote",
       link: "/contact",
       bg: "bg-indigo-50",
-      img: images.slider2,
+      img: images.slider3,
 
       text: "text-slate-900",
       btnVariant: "primary" as const,
