@@ -59,7 +59,10 @@ const Hero = () => {
       cta: "Explore Shop",
       link: "/shop",
       bg: "bg-slate-900",
+      overlay:
+        "bg-gradient-to-r from-slate-950/80 via-slate-900/55 to-transparent",
       img: images.slider1,
+      imgClass: "object-cover opacity-35",
       text: "text-white",
       btnVariant: "secondary" as const,
     },
@@ -71,9 +74,12 @@ const Hero = () => {
       cta: "Request Service",
       link: "/shop",
       bg: "bg-emerald-50",
+      overlay:
+        "bg-gradient-to-r from-slate-950/70 via-slate-900/45 to-transparent",
       img: images.slider2,
-      text: "text-slate-900",
-      btnVariant: "primary" as const,
+      imgClass: "object-contain opacity-90 scale-110 drop-shadow-2xl",
+      text: "text-white",
+      btnVariant: "secondary" as const,
     },
     {
       tag: "Electrical & Panels",
@@ -83,10 +89,12 @@ const Hero = () => {
       cta: "Request a Quote",
       link: "/contact",
       bg: "bg-indigo-50",
+      overlay:
+        "bg-gradient-to-r from-slate-950/70 via-slate-900/45 to-transparent",
       img: images.slider3,
-
-      text: "text-slate-900",
-      btnVariant: "primary" as const,
+      imgClass: "object-contain opacity-90 scale-110 drop-shadow-2xl",
+      text: "text-white",
+      btnVariant: "secondary" as const,
     },
   ];
 
@@ -109,12 +117,14 @@ const Hero = () => {
           <img
             src={slide.img}
             alt=""
-            className="absolute inset-0 h-full w-full object-cover opacity-35"
+            className={`absolute inset-0 h-full w-full ${slide.imgClass}`}
           />
 
+          <div className={`absolute inset-0 ${slide.overlay}`} />
+
           <div className="absolute inset-0 bg-gradient-to-r from-slate-900/75 via-slate-900/45 to-transparent" />
-          {slide.text === "text-slate-900" && (
-            <div className="absolute inset-0 bg-white/55" />
+          {slide.text === "text-white" && (
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-900/75 via-slate-900/45 to-transparent" />
           )}
 
           <div className="relative z-10 mx-auto w-full max-w-7xl px-4 sm:px-6 md:px-12">
