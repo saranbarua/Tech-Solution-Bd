@@ -2,23 +2,22 @@ import React, { useEffect, useMemo, useState } from "react";
 import { useSearchParams } from "react-router-dom";
 import {
   Filter,
-  SlidersHorizontal,
   LayoutGrid,
   List,
   ChevronLeft,
   ChevronRight,
-  ChevronDown,
+  X,
 } from "lucide-react";
 import { SEO, Layout } from "../components/Layout";
 import { ProductCard, Breadcrumbs, Button } from "../components/UI";
 import { dataService } from "../services/dataService";
 import { Product, Brand, CategoryNode } from "../types";
 
-const collectSlugs = (node: CategoryNode): string[] => {
-  const own = [node.slug];
-  const kids = (node.children || []).flatMap(collectSlugs);
-  return [...own, ...kids];
-};
+// ─── Helpers ──────────────────────────────────────────────────────────────────
+const collectSlugs = (node: CategoryNode): string[] => [
+  node.slug,
+  ...(node.children || []).flatMap(collectSlugs),
+];
 
 const findNodeBySlug = (
   nodes: CategoryNode[],
@@ -32,6 +31,21 @@ const findNodeBySlug = (
   return null;
 };
 
+const autoOpenAncestors = (
+  nodes: CategoryNode[],
+  targetSlug: string,
+  open: Set<string>,
+) => {
+  for (const n of nodes) {
+    const slugs = collectSlugs(n);
+    if (slugs.includes(targetSlug) && n.slug !== targetSlug) {
+      open.add(n.slug);
+      if (n.children) autoOpenAncestors(n.children, targetSlug, open);
+    }
+  }
+};
+
+// ─── Category Tree ─────────────────────────────────────────────────────────────
 const CategoryTreeButtons = ({
   nodes,
   selectedSlug,
@@ -47,17 +61,6 @@ const CategoryTreeButtons = ({
   setOpenNodes: React.Dispatch<React.SetStateAction<Set<string>>>;
   level?: number;
 }) => {
-  const collectSlugs = (node: CategoryNode): string[] => [
-    node.slug,
-    ...(node.children || []).flatMap(collectSlugs),
-  ];
-
-  const isAncestorOfSelected = (node: CategoryNode) => {
-    if (!selectedSlug || selectedSlug === "All") return false;
-    const all = collectSlugs(node);
-    return all.includes(selectedSlug) && node.slug !== selectedSlug;
-  };
-
   const toggle = (e: React.MouseEvent, slug: string) => {
     e.stopPropagation();
     setOpenNodes((prev) => {
@@ -67,8 +70,14 @@ const CategoryTreeButtons = ({
     });
   };
 
+  const isAncestorOfSelected = (node: CategoryNode) => {
+    if (!selectedSlug || selectedSlug === "All") return false;
+    const all = collectSlugs(node);
+    return all.includes(selectedSlug) && node.slug !== selectedSlug;
+  };
+
   return (
-    <div className="space-y-0.5">
+    <div>
       {nodes.map((node) => {
         const isActive = selectedSlug === node.slug;
         const isOpen = openNodes.has(node.slug);
@@ -80,53 +89,42 @@ const CategoryTreeButtons = ({
             <div
               onClick={() => {
                 onSelect(node.slug);
-                if (hasChildren) {
-                  setOpenNodes((prev) => {
-                    const next = new Set(prev);
-                    next.add(node.slug); // auto-open when selected
-                    return next;
-                  });
-                }
+                if (hasChildren)
+                  setOpenNodes((prev) => new Set([...prev, node.slug]));
               }}
-              className={`flex items-center gap-1.5 px-2 py-1.5 rounded-lg cursor-pointer text-sm transition-all
+              className={`
+                flex items-center gap-1.5 rounded-xl cursor-pointer text-sm
+                transition-all duration-150 select-none group
                 ${
                   isActive
-                    ? "bg-emerald-50 text-emerald-800 font-medium"
+                    ? "bg-gradient-to-r from-orange-50 to-teal-50 text-orange-800 font-bold shadow-[inset_2px_0_0_#0d9488]"
                     : isAncestor
-                      ? "text-emerald-700"
-                      : "text-slate-600 hover:bg-slate-50 hover:text-emerald-700"
-                }`}
-              style={{ paddingLeft: level * 14 + 8 }}
+                      ? "text-orange-700 font-semibold"
+                      : "text-slate-500 hover:bg-slate-50 hover:text-orange-700"
+                }
+              `}
+              style={{ padding: `7px 8px 7px ${8 + level * 14}px` }}
             >
-              {/* Toggle arrow */}
               {hasChildren ? (
                 <span
                   onClick={(e) => toggle(e, node.slug)}
-                  className="flex items-center justify-center w-5 h-5 rounded-md hover:bg-black/5 transition-colors flex-shrink-0"
+                  className="flex items-center justify-center w-[18px] h-[18px] rounded flex-shrink-0 text-slate-400 group-hover:text-slate-600 transition-transform duration-200"
+                  style={{
+                    transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
+                  }}
                 >
-                  <ChevronRight
-                    size={13}
-                    className="transition-transform duration-200"
-                    style={{
-                      transform: isOpen ? "rotate(90deg)" : "rotate(0deg)",
-                    }}
-                  />
+                  <ChevronRight size={12} />
                 </span>
               ) : (
-                <span className="w-5 flex-shrink-0" />
+                <span className="w-[18px] flex-shrink-0" />
               )}
-
               <span className="flex-1 leading-snug">{node.name}</span>
-
-              {/* Optional: count badge — wire up real counts from your data */}
-              {/* <span className="text-xs bg-slate-100 text-slate-400 rounded-full px-2 py-0.5">{node.count}</span> */}
             </div>
 
-            {/* Children with CSS transition */}
             <div
-              className="overflow-hidden transition-all duration-250 ease-in-out"
+              className="overflow-hidden transition-all duration-300 ease-in-out"
               style={{
-                maxHeight: isOpen ? "600px" : "0px",
+                maxHeight: isOpen ? "800px" : "0px",
                 opacity: isOpen ? 1 : 0,
               }}
             >
@@ -147,14 +145,18 @@ const CategoryTreeButtons = ({
     </div>
   );
 };
+
+// ─── Shop Page ─────────────────────────────────────────────────────────────────
 export const Shop = () => {
   const [searchParams] = useSearchParams();
   const [openNodes, setOpenNodes] = useState<Set<string>>(new Set());
   const [products, setProducts] = useState<Product[]>([]);
   const [categories, setCategories] = useState<CategoryNode[]>([]);
-  const [brands, setBrands] = useState<Brand[]>([]);
   const [loading, setLoading] = useState(true);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [view, setView] = useState<"grid" | "list">("grid");
+  const [page, setPage] = useState(1);
+  const perPage = 9;
 
   const [selectedCat, setSelectedCat] = useState(
     searchParams.get("category") || "All",
@@ -162,21 +164,7 @@ export const Shop = () => {
   const [selectedBrand, setSelectedBrand] = useState("All");
   const [sortBy, setSortBy] = useState("newest");
 
-  const autoOpenAncestors = (
-    nodes: CategoryNode[],
-    targetSlug: string,
-    open: Set<string>,
-  ) => {
-    for (const n of nodes) {
-      const slugs = collectSlugs(n);
-      if (slugs.includes(targetSlug) && n.slug !== targetSlug) {
-        open.add(n.slug);
-        if (n.children) autoOpenAncestors(n.children, targetSlug, open);
-      }
-    }
-  };
-
-  // Call inside your URL sync useEffect:
+  // Sync URL param → selectedCat + auto-open ancestors
   useEffect(() => {
     const catFromUrl = searchParams.get("category") || "All";
     setSelectedCat(catFromUrl);
@@ -189,31 +177,27 @@ export const Shop = () => {
     }
   }, [searchParams, categories]);
 
-  // ✅ load categories + brands once
+  // Load categories + brands once
   useEffect(() => {
     (async () => {
       try {
-        setLoading(true);
         const [c, b] = await Promise.all([
           dataService.getCategories(),
           dataService.getBrands(),
         ]);
         setCategories(c);
-        setBrands(b);
-      } finally {
-        setLoading(false);
+      } catch (e) {
+        console.error(e);
       }
     })();
   }, []);
 
-  // ✅ load products (fetch all once; then filter locally for parent/child support)
+  // Load all products once, filter locally
   useEffect(() => {
     (async () => {
       try {
         setLoading(true);
         const p = await dataService.getProducts();
-        // console.log(p);
-        // all products
         setProducts(p);
       } finally {
         setLoading(false);
@@ -224,12 +208,11 @@ export const Shop = () => {
   const allowedCategorySlugs = useMemo(() => {
     if (selectedCat === "All") return null;
     const node = findNodeBySlug(categories, selectedCat);
-    if (!node) return new Set([selectedCat]); // fallback
-    return new Set(collectSlugs(node)); // include children
+    return node ? new Set(collectSlugs(node)) : new Set([selectedCat]);
   }, [categories, selectedCat]);
 
   const filteredProducts = useMemo(() => {
-    const list = products
+    return products
       .filter((p: any) => {
         const catOk =
           selectedCat === "All"
@@ -237,7 +220,6 @@ export const Shop = () => {
             : allowedCategorySlugs
               ? allowedCategorySlugs.has(p.category?.slug)
               : p.category?.slug === selectedCat;
-
         const brandOk = selectedBrand === "All" || p.brand === selectedBrand;
         return catOk && brandOk;
       })
@@ -247,203 +229,291 @@ export const Shop = () => {
         if (sortBy === "popular") return (b.rating || 0) - (a.rating || 0);
         return 0;
       });
-
-    return list;
   }, [products, selectedCat, selectedBrand, sortBy, allowedCategorySlugs]);
+
+  const totalPages = Math.ceil(filteredProducts.length / perPage);
+  const paginatedProducts = filteredProducts.slice(
+    (page - 1) * perPage,
+    page * perPage,
+  );
+
+  useEffect(() => {
+    setPage(1);
+  }, [selectedCat, selectedBrand, sortBy]);
+
+  const catLabel =
+    selectedCat === "All"
+      ? "All Products"
+      : findNodeBySlug(categories, selectedCat)?.name || selectedCat;
+
+  const hasActiveFilters = selectedCat !== "All" || selectedBrand !== "All";
+
+  const resetFilters = () => {
+    setSelectedCat("All");
+    setSelectedBrand("All");
+  };
+
+  // ─── Sidebar filter panel (shared desktop + mobile) ─────────────────────────
+  const FilterPanel = () => (
+    <div className="flex flex-col gap-7">
+      {/* Categories */}
+      <div>
+        <p className="text-[10px] font-black tracking-widest uppercase text-slate-400 mb-3">
+          Categories
+        </p>
+        <button
+          onClick={() => setSelectedCat("All")}
+          className={`w-full text-left text-sm py-[7px] px-2 rounded-xl transition-all duration-150 font-medium
+            ${
+              selectedCat === "All"
+                ? "bg-gradient-to-r from-orange-50 to-teal-50 text-orange-800 font-bold shadow-[inset_2px_0_0_#0d9488]"
+                : "text-slate-500 hover:bg-slate-50 hover:text-orange-700"
+            }`}
+        >
+          All Categories
+        </button>
+        <div className="mt-1">
+          <CategoryTreeButtons
+            nodes={categories}
+            selectedSlug={selectedCat}
+            onSelect={(slug) => {
+              setSelectedCat(slug);
+              setIsFilterOpen(false);
+            }}
+            openNodes={openNodes}
+            setOpenNodes={setOpenNodes}
+          />
+        </div>
+      </div>
+
+      {/* Reset */}
+      {hasActiveFilters && (
+        <button
+          onClick={resetFilters}
+          className="flex items-center justify-center gap-2 py-2.5 px-4 rounded-xl
+            border border-rose-200 bg-rose-50 text-rose-500 text-sm font-bold
+            hover:bg-rose-500 hover:text-white hover:border-rose-500 transition-all duration-200"
+        >
+          <X size={14} /> Reset Filters
+        </button>
+      )}
+    </div>
+  );
 
   return (
     <Layout>
       <SEO
         title="Shop"
-        description="Explore our huge collection of laptops, desktops, and accessories."
+        description="Explore our wide range of products across various categories and brands."
       />
 
+      {/* Hero bar */}
+      <div className="bg-gradient-to-r from-orange-700 to-teal-600 text py-8">
+        <div className="max-w-7xl mx-auto px-4">
+          <Breadcrumbs
+            items={[
+              { label: "Shop", href: "/shop" },
+              ...(selectedCat !== "All" ? [{ label: catLabel }] : []),
+            ]}
+          />
+          <h1 className="text-3xl font-black text-white mt-2 tracking-tight">
+            {catLabel}
+          </h1>
+          <p className="text-orange-200 text-sm mt-1 font-medium">
+            {filteredProducts.length} products found
+          </p>
+        </div>
+      </div>
+
       <div className="max-w-7xl mx-auto px-4 py-8">
-        <Breadcrumbs items={[{ label: "Shop" }]} />
-
-        <div className="flex flex-col lg:flex-row gap-4">
-          {/* Sidebar Filters */}
-          <aside className="w-full lg:w-64 space-y-8">
-            <div className="hidden lg:block space-y-8 sticky top-24">
-              {/* Category Filter (Tree) */}
-              <div>
-                <h4 className="font-bold text-slate-900 mb-2 pb-2 border-b">
-                  Categories
-                </h4>
-
-                <button
-                  onClick={() => setSelectedCat("All")}
-                  className={`block w-full text-left text-sm py-1.5 rounded-lg px-2 transition-colors
-                    ${selectedCat === "All" ? "text-emerald-700 font-bold bg-emerald-50" : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"}`}
-                >
-                  All Categories
-                </button>
-
-                <div className="mt-2">
-                  <CategoryTreeButtons
-                    nodes={categories}
-                    selectedSlug={selectedCat}
-                    onSelect={(slug) => setSelectedCat(slug)}
-                    openNodes={openNodes}
-                    setOpenNodes={setOpenNodes}
-                  />
-                </div>
-              </div>
+        <div className="flex gap-6 items-start">
+          {/* ── Desktop Sidebar ── */}
+          <aside className="hidden lg:block w-56 flex-shrink-0 sticky top-24">
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm p-5">
+              <FilterPanel />
             </div>
           </aside>
-          <div className="flex items-center gap-2 mb-2 lg:hidden">
-            <Button
-              variant="outline"
-              className="flex-1 gap-2"
-              onClick={() => setIsFilterOpen(true)}
-            >
-              <Filter size={18} /> Filter
-            </Button>
-            <Button variant="outline" className="flex-1 gap-2">
-              <SlidersHorizontal size={18} /> Sort
-            </Button>
-          </div>
-          {/* Product Grid Area */}
-          <main className="flex-1">
-            <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-              <div>
-                <h1 className="text-2xl font-black text-slate-900">
-                  {selectedCat === "All" ? "All Products" : selectedCat}
-                </h1>
-                <p className="text-sm text-slate-500 font-medium">
-                  {filteredProducts.length} items found
-                </p>
+
+          {/* ── Main ── */}
+          <main className="flex-1 min-w-0">
+            {/* Toolbar */}
+            <div className="bg-white rounded-2xl border border-slate-200 shadow-sm px-4 py-3 mb-5 flex items-center gap-3 flex-wrap">
+              {/* Mobile filter button */}
+              <button
+                className="lg:hidden flex items-center gap-2 px-3 py-2 rounded-xl bg-orange-50 text-orange-700 font-bold text-sm border border-orange-200 hover:bg-orange-100 transition-colors"
+                onClick={() => setIsFilterOpen(true)}
+              >
+                <Filter size={15} /> Filters
+                {hasActiveFilters && (
+                  <span className="w-4 h-4 bg-orange-600 text-white rounded-full text-[10px] flex items-center justify-center font-black">
+                    !
+                  </span>
+                )}
+              </button>
+
+              {/* Active filter chips */}
+              <div className="flex gap-2 flex-wrap flex-1">
+                {selectedCat !== "All" && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-orange-50 text-orange-700 rounded-full text-xs font-bold border border-orange-200">
+                    {catLabel}
+                    <button
+                      onClick={() => setSelectedCat("All")}
+                      className="text-orange-500 hover:text-orange-800 transition-colors"
+                    >
+                      <X size={11} strokeWidth={3} />
+                    </button>
+                  </span>
+                )}
+                {selectedBrand !== "All" && (
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-blue-50 text-blue-700 rounded-full text-xs font-bold border border-blue-200">
+                    {selectedBrand}
+                    <button
+                      onClick={() => setSelectedBrand("All")}
+                      className="text-blue-400 hover:text-blue-700 transition-colors"
+                    >
+                      <X size={11} strokeWidth={3} />
+                    </button>
+                  </span>
+                )}
               </div>
 
-              <div className="flex items-center gap-4">
-                <div className="flex items-center gap-1 border border-slate-200 rounded-lg p-1 bg-slate-50">
-                  <button className="p-1.5 rounded hover:bg-white text-slate-600">
-                    <LayoutGrid size={18} />
+              {/* Right controls */}
+              <div className="flex items-center gap-2 ml-auto">
+                {/* View toggle */}
+                <div className="flex gap-1 bg-slate-100 rounded-xl p-1">
+                  <button
+                    onClick={() => setView("grid")}
+                    className={`p-1.5 rounded-lg transition-all ${view === "grid" ? "bg-white shadow-sm text-orange-700" : "text-slate-400 hover:text-slate-600"}`}
+                  >
+                    <LayoutGrid size={16} />
                   </button>
-                  <button className="p-1.5 rounded hover:bg-white text-slate-400">
-                    <List size={18} />
+                  <button
+                    onClick={() => setView("list")}
+                    className={`p-1.5 rounded-lg transition-all ${view === "list" ? "bg-white shadow-sm text-orange-700" : "text-slate-400 hover:text-slate-600"}`}
+                  >
+                    <List size={16} />
                   </button>
                 </div>
 
+                {/* Sort */}
                 <select
-                  className="bg-white border border-slate-200 rounded-lg px-3 py-2 text-sm font-medium outline-none focus:border-emerald-500"
                   value={sortBy}
                   onChange={(e) => setSortBy(e.target.value)}
+                  className="bg-white border border-slate-200 rounded-xl px-3 py-2 text-sm font-semibold text-slate-700 outline-none focus:border-orange-400 cursor-pointer appearance-none"
                 >
                   <option value="newest">Newest First</option>
-                  <option value="price-low">Price: Low to High</option>
-                  <option value="price-high">Price: High to Low</option>
+                  <option value="price-low">Price: Low → High</option>
+                  <option value="price-high">Price: High → Low</option>
                   <option value="popular">Most Popular</option>
                 </select>
               </div>
             </div>
 
+            {/* Products */}
             {loading ? (
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 animate-pulse">
+              <div
+                className={`grid gap-5 ${view === "grid" ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3" : "grid-cols-1"}`}
+              >
                 {[...Array(6)].map((_, i) => (
-                  <div key={i} className="bg-slate-100 h-80 rounded-xl" />
+                  <div
+                    key={i}
+                    className="bg-slate-100 rounded-2xl animate-pulse"
+                    style={{ height: view === "grid" ? 320 : 100 }}
+                  />
                 ))}
               </div>
-            ) : filteredProducts.length > 0 ? (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredProducts.map((product) => (
-                  <ProductCard key={product.id} product={product} />
-                ))}
-              </div>
-            ) : (
-              <div className="py-20 text-center bg-slate-50 rounded-2xl border-2 border-dashed border-slate-200">
-                <h3 className="text-lg font-bold text-slate-800 mb-2">
-                  No matching products
+            ) : paginatedProducts.length === 0 ? (
+              <div className="py-24 text-center bg-white rounded-2xl border-2 border-dashed border-slate-200">
+                <div className="text-5xl mb-4">🔍</div>
+                <h3 className="text-lg font-black text-slate-800 mb-2">
+                  No products found
                 </h3>
-                <p className="text-slate-500 mb-6">
-                  Try adjusting your filters or search criteria.
+                <p className="text-slate-400 text-sm mb-6">
+                  Try adjusting or clearing your filters.
                 </p>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setSelectedCat("All");
-                    setSelectedBrand("All");
-                  }}
-                >
+                <Button variant="outline" onClick={resetFilters}>
                   Reset All Filters
                 </Button>
               </div>
+            ) : (
+              <div
+                className={`gap-5 ${
+                  view === "grid"
+                    ? "grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                    : "flex flex-col"
+                }`}
+                style={{ display: view === "grid" ? undefined : "flex" }}
+              >
+                {paginatedProducts.map((product) => (
+                  <ProductCard key={product.id} product={product} />
+                ))}
+              </div>
             )}
 
-            {/* Pagination (static for now) */}
-            <div className="mt-12 flex items-center justify-center gap-2">
-              <button
-                className="p-2 rounded-lg border border-slate-200 disabled:opacity-30"
-                disabled
-              >
-                <ChevronLeft size={20} />
-              </button>
-              <button className="w-10 h-10 rounded-lg bg-emerald-600 text-white font-bold">
-                1
-              </button>
-              <button className="w-10 h-10 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
-                2
-              </button>
-              <button className="w-10 h-10 rounded-lg border border-slate-200 text-slate-600 hover:bg-slate-50 transition-colors">
-                3
-              </button>
-              <button className="p-2 rounded-lg border border-slate-200 hover:bg-slate-50">
-                <ChevronRight size={20} />
-              </button>
-            </div>
-          </main>
-
-          <div
-            className={`fixed inset-0 z-[100] lg:hidden transition-opacity duration-300 ${
-              isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"
-            }`}
-          >
-            <div
-              className="absolute inset-0 bg-slate-900/50"
-              onClick={() => setIsFilterOpen(false)}
-            />
-
-            <div
-              className={`absolute left-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-300 ${
-                isFilterOpen ? "translate-x-0" : "-translate-x-full"
-              }`}
-            >
-              <div className="p-4 border-b flex items-center justify-between">
-                <h3 className="font-bold text-slate-900">Categories</h3>
-                <button onClick={() => setIsFilterOpen(false)}>
-                  <ChevronDown className="rotate-90" size={20} />
-                </button>
-              </div>
-
-              <div className="p-4 overflow-y-auto h-[calc(100%-64px)]">
+            {/* Pagination */}
+            {totalPages > 1 && (
+              <div className="mt-10 flex items-center justify-center gap-2">
                 <button
-                  onClick={() => {
-                    setSelectedCat("All");
-                    setIsFilterOpen(false);
-                  }}
-                  className={`block w-full text-left text-sm py-2 rounded-lg px-2 transition-colors ${
-                    selectedCat === "All"
-                      ? "text-emerald-700 font-bold bg-emerald-50"
-                      : "text-slate-600 hover:text-emerald-600 hover:bg-slate-50"
-                  }`}
+                  onClick={() => setPage((p) => Math.max(1, p - 1))}
+                  disabled={page === 1}
+                  className="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50 transition-colors"
                 >
-                  All Categories
+                  <ChevronLeft size={18} />
                 </button>
 
-                <div className="mt-2">
-                  <CategoryTreeButtons
-                    nodes={categories}
-                    selectedSlug={selectedCat}
-                    onSelect={(slug) => {
-                      setSelectedCat(slug);
-                      setIsFilterOpen(false);
-                    }}
-                    openNodes={openNodes}
-                    setOpenNodes={setOpenNodes}
-                  />
-                </div>
+                {[...Array(totalPages)].map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i + 1)}
+                    className={`w-9 h-9 rounded-xl font-bold text-sm transition-all ${
+                      page === i + 1
+                        ? "bg-gradient-to-br from-orange-500 to-teal-600 text-white shadow-md shadow-orange-200"
+                        : "border border-slate-200 text-slate-600 hover:bg-slate-50"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                  disabled={page === totalPages}
+                  className="w-9 h-9 rounded-xl border border-slate-200 flex items-center justify-center disabled:opacity-30 hover:bg-slate-50 transition-colors"
+                >
+                  <ChevronRight size={18} />
+                </button>
               </div>
-            </div>
+            )}
+          </main>
+        </div>
+      </div>
+
+      {/* ── Mobile Filter Drawer ── */}
+      <div
+        className={`fixed inset-0 z-[100] lg:hidden transition-opacity duration-300 ${
+          isFilterOpen ? "opacity-100" : "opacity-0 pointer-events-none"
+        }`}
+      >
+        <div
+          className="absolute inset-0 bg-slate-900/50 backdrop-blur-sm"
+          onClick={() => setIsFilterOpen(false)}
+        />
+        <div
+          className={`absolute left-0 top-0 h-full w-[85%] max-w-sm bg-white shadow-2xl transition-transform duration-300 flex flex-col ${
+            isFilterOpen ? "translate-x-0" : "-translate-x-full"
+          }`}
+        >
+          <div className="p-4 border-b flex items-center justify-between flex-shrink-0">
+            <h3 className="font-black text-slate-900 text-base">Filters</h3>
+            <button
+              onClick={() => setIsFilterOpen(false)}
+              className="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-100 text-slate-500 hover:bg-slate-200 transition-colors"
+            >
+              <X size={16} />
+            </button>
+          </div>
+          <div className="p-5 overflow-y-auto flex-1">
+            <FilterPanel />
           </div>
         </div>
       </div>
