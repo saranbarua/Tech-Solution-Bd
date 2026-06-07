@@ -1,6 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Link, useParams } from "react-router-dom";
-import { ChevronLeft, ChevronRight, X, Star } from "lucide-react";
+import {
+  ChevronLeft,
+  ChevronRight,
+  X,
+  Star,
+  MessageCircle,
+  Package,
+  Cpu,
+  FileText,
+  Phone,
+} from "lucide-react";
 import apiurl from "@/src/apiUrl/apiUrl";
 import { dataService } from "../services/dataService";
 import { Layout, SEO } from "../components/Layout";
@@ -402,139 +412,160 @@ export const ProductDetail = () => {
             </div>
           </div>
 
-          {/* RIGHT: Details */}
+          {/* RIGHT: Details — premium redesign */}
           <div className="lg:pt-2">
-            <p className="text-[11px] uppercase tracking-[0.22em] text-slate-500 font-semibold">
-              {product.category?.name || "Category"}
-            </p>
+            {/* Category label with leading dash */}
+            <div className="flex items-center gap-2">
+              <span className="w-4 h-px bg-slate-400 opacity-50 shrink-0" />
+              <p className="text-[11px] uppercase tracking-[0.18em] text-slate-400 font-medium">
+                {product.category?.name || "Category"}
+              </p>
+            </div>
 
-            <h1 className="mt-2 text-2xl md:text-3xl font-black text-slate-900 tracking-tight">
+            {/* Title */}
+            <h1 className="mt-2.5 text-[26px] font-medium text-slate-900 leading-tight tracking-tight">
               {product.name}
             </h1>
 
-            <div className="mt-3 flex items-center gap-2">
-              <div className="flex items-center gap-1">
+            {/* Stars + meta chips */}
+            <div className="mt-3 flex items-center gap-3 flex-wrap">
+              <div className="flex items-center gap-0.5">
                 {[1, 2, 3, 4, 5].map((i) => (
                   <Star
                     key={i}
-                    size={14}
+                    size={13}
                     className={
                       i <= Math.round(avgRating)
                         ? "fill-amber-400 text-amber-400"
-                        : "text-slate-200"
+                        : "text-slate-200 fill-slate-200"
                     }
                   />
                 ))}
+                <span className="ml-1.5 text-[12px] text-slate-400">
+                  {avgRating.toFixed(1)} ·{" "}
+                  {(product as any).reviews?.length || 0} reviews
+                </span>
               </div>
-              <span className="text-xs text-slate-400">
-                ({(product as any).reviews?.length || 0} reviews)
-              </span>
 
-              <span className="text-xs text-slate-300">•</span>
-              <span className="text-xs text-slate-500 font-medium">
-                Stock: {(product as any).stock ?? "N/A"}
-              </span>
+              <span className="w-px h-3 bg-slate-200 shrink-0" />
+
+              <div className="flex items-center gap-1.5 text-[12px] text-slate-500">
+                <Package size={13} className="opacity-60" />
+                {(product as any).stock
+                  ? `In stock · ${(product as any).stock} units`
+                  : "Check availability"}
+              </div>
             </div>
 
-            <div className="mt-6 rounded-2xl border border-slate-200 bg-white p-5">
-              <p className="text-xs text-slate-500 font-semibold">Price</p>
-              <p className="text-3xl font-black text-slate-900 mt-1">
-                {Number(product.price || 0).toLocaleString()} BDT
-              </p>
+            {/* Divider */}
+            <div className="mt-5 border-t border-slate-100" />
 
-              {(product as any).oldPrice ? (
-                <p className="text-sm text-slate-400 line-through mt-1">
-                  {Number((product as any).oldPrice).toLocaleString()} BDT
-                </p>
-              ) : null}
+            {/* Price block */}
+            <div className="mt-5 flex items-end gap-3">
+              <span className="text-sm text-slate-400 mb-1">BDT</span>
+              <span className="text-[32px] font-medium text-slate-900 leading-none tracking-tight">
+                {Number(product.price || 0).toLocaleString()}
+              </span>
+              {(product as any).oldPrice && (
+                <>
+                  <span className="text-sm text-slate-300 line-through mb-1">
+                    {Number((product as any).oldPrice).toLocaleString()}
+                  </span>
+                  <span className="mb-1 text-[11px] font-medium bg-emerald-50 text-emerald-700 px-2 py-0.5 rounded-full">
+                    −
+                    {Math.round(
+                      (1 - product.price / (product as any).oldPrice) * 100,
+                    )}
+                    %
+                  </span>
+                </>
+              )}
             </div>
 
-            <div className="mt-6">
-              <div className="rounded-3xl border border-slate-200 bg-white overflow-hidden shadow-[0_28px_90px_-60px_rgba(15,23,42,0.6)]">
-                {/* Header */}
-                <div className="px-5 py-4 border-b border-slate-200 bg-gradient-to-b from-white to-slate-50">
-                  <div className="flex items-start justify-between gap-4">
-                    <div>
-                      <h3 className="text-sm font-black text-slate-900 tracking-tight">
-                        About this product
-                      </h3>
-                      <p className="text-[12px] text-slate-500 mt-1">
-                        Technical specs, key features, and warranty in one
-                        place.
-                      </p>
-                    </div>
+            {/* Model number tag */}
+            {(product as any).modelNumber && (
+              <div className="mt-3.5 inline-flex items-center gap-1.5 border border-slate-200 rounded-md px-2.5 py-1.5 text-[12px] text-slate-500">
+                <Cpu size={13} className="opacity-60" />
+                Model{" "}
+                <span className="font-medium text-slate-800">
+                  {(product as any).modelNumber}
+                </span>
+              </div>
+            )}
 
-                    <div className="shrink-0 inline-flex items-center gap-2 rounded-full bg-slate-900 text-white px-3 py-1.5">
-                      <span className="text-[16px] font-semibold tracking-wide">
-                        {(product as any).modelNumber || "N/A"}
-                      </span>
-                    </div>
-                  </div>
+            {/* About card */}
+            <div className="mt-5 rounded-xl border border-slate-200 bg-white overflow-hidden">
+              {/* Card header */}
+              <div className="flex items-center justify-between px-4 py-3.5 border-b border-slate-100 bg-slate-50/60">
+                <div>
+                  <p className="text-[13px] font-medium text-slate-900">
+                    Product details
+                  </p>
+                  <p className="text-[11px] text-slate-400 mt-0.5">
+                    Specs, features &amp; warranty
+                  </p>
                 </div>
-                {/* Content */}
-                <div className="p-5">
-                  {product.description ? (
-                    <div className="prose-description">
-                      {product.description.split("\n").map((line, i) => {
-                        const trimmed = line.trim();
+                <FileText size={16} className="text-slate-300 shrink-0" />
+              </div>
 
-                        // Section heading (ends with ":")
-                        if (trimmed.endsWith(":") && !trimmed.startsWith("-")) {
-                          return (
-                            <p
-                              key={i}
-                              className="text-[11px] uppercase tracking-widest text-slate-400 font-semibold mt-5 mb-2 first:mt-0"
-                            >
-                              {trimmed.slice(0, -1)}
-                            </p>
-                          );
-                        }
+              {/* Description body */}
+              <div className="p-4">
+                {product.description ? (
+                  <div>
+                    {product.description.split("\n").map((line, i) => {
+                      const trimmed = line.trim();
 
-                        // Bullet line with checkbox markdown
-                        if (trimmed.startsWith("- ")) {
-                          const text = trimmed
-                            .replace(/^-\s+\[[ x]\]\s*/i, "")
-                            .replace(/^-\s+/, "")
-                            .trim();
-
-                          if (!text) return null;
-
-                          return (
-                            <div
-                              key={i}
-                              className="flex items-start gap-2.5 py-1.5 border-b border-slate-100 last:border-0"
-                            >
-                              <span className="mt-[5px] h-1.5 w-1.5 shrink-0 rounded-full bg-emerald-400" />
-                              <span className="text-[13px] text-slate-700 leading-snug">
-                                {text}
-                              </span>
-                            </div>
-                          );
-                        }
-
-                        // Empty line — small spacer
-                        if (!trimmed) return <div key={i} className="h-1" />;
-
-                        // Plain text fallback
+                      if (trimmed.endsWith(":") && !trimmed.startsWith("-")) {
                         return (
                           <p
                             key={i}
-                            className="text-sm text-slate-600 leading-relaxed"
+                            className="text-[10px] uppercase tracking-[0.14em] text-slate-400 font-medium mt-4 mb-2 first:mt-0"
                           >
-                            {trimmed}
+                            {trimmed.slice(0, -1)}
                           </p>
                         );
-                      })}
-                    </div>
-                  ) : (
-                    <p className="text-sm text-slate-400 italic">
-                      No description available.
-                    </p>
-                  )}
-                </div>
+                      }
+
+                      if (trimmed.startsWith("- ")) {
+                        const text = trimmed
+                          .replace(/^-\s+\[[ x]\]\s*/i, "")
+                          .replace(/^-\s+/, "")
+                          .trim();
+
+                        if (!text) return null;
+
+                        return (
+                          <div
+                            key={i}
+                            className="flex items-start gap-2.5 py-1.5 border-b border-slate-50 last:border-0"
+                          >
+                            <span className="mt-[6px] h-[5px] w-[5px] shrink-0 rounded-full bg-emerald-400 opacity-80" />
+                            <span className="text-[13px] text-slate-600 leading-snug">
+                              {text}
+                            </span>
+                          </div>
+                        );
+                      }
+
+                      if (!trimmed) return <div key={i} className="h-1" />;
+
+                      return (
+                        <p
+                          key={i}
+                          className="text-[13px] text-slate-600 leading-relaxed"
+                        >
+                          {trimmed}
+                        </p>
+                      );
+                    })}
+                  </div>
+                ) : (
+                  <p className="text-sm text-slate-300 italic">
+                    No description available.
+                  </p>
+                )}
               </div>
             </div>
-            {/* Ask price strip */}
           </div>
         </div>
         <ProductBottomSection
